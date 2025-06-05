@@ -29,10 +29,14 @@ pipeline {
             steps {
                 script {
                     // Build Backend Image
-                    sh "sudo docker build -t ${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER} ."
+                    dir('scolarite-backend') {
+                        sh "sudo docker build -t ${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER} ."
+                    }
                     
                     // Build Frontend Image
-                    sh "sudo docker build -t ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER} ."
+                    dir('Scholarite_frontend') {
+                        sh "sudo docker build -t ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER} ."
+                    }
                 }
             }
         }
