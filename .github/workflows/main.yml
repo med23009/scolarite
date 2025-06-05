@@ -10,9 +10,11 @@ jobs:
   trigger-jenkins:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Jenkins Pipeline
-        uses: jenkinsci/github-actions-plugin@master
+      - name: Trigger Jenkins Job
+        # Utilisation de l'action recommandée par GitHub avec une version spécifique
+        uses: appleboy/jenkins-action@v0.1.0
         with:
-          jenkins-url: ${{ secrets.JENKINS_URL }}
-          jenkins-token: ${{ secrets.JENKINS_TOKEN }}
-          job-name: 'scolarite-pipeline' 
+          url: ${{ secrets.JENKINS_URL }}
+          user: ${{ secrets.JENKINS_USER }} # Assurez-vous d'avoir ce secret dans GitHub
+          token: ${{ secrets.JENKINS_TOKEN }}
+          job: 'scolarite-pipeline' 
