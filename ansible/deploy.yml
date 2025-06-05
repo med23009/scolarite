@@ -1,0 +1,53 @@
+---
+- name: Deploy Scolarite Application
+  hosts: all
+  become: yes
+  vars:
+    backend_version: "{{ backend_version }}"
+    frontend_version: "{{ frontend_version }}"
+    docker_registry: "localhost:5000"
+
+  tasks:
+    - name: Pull Backend Image
+      docker_image:
+        name: "{{ docker_registry }}/scolarite-backend:{{ backend_version }}"
+        source: pull
+        force_source: yes
+
+    - name: Pull Frontend Image
+      docker_image:
+        name: "{{ docker_registry }}/scolarite-frontend:{{ frontend_version }}"
+        source: pull
+        force_source: yes
+
+    - name: Stop and Remove Existing Backend Container
+      docker_container:
+        name: scolarite-backend
+        state: absent
+      ignore_errors: yes
+
+    - name: Stop and Remove Existing Frontend Container
+      docker_container:
+        name: scolarite-frontend
+        state: absent
+      ignore_errors: yes
+
+    - name: Start Backend Container
+      docker_container:
+        name: scolarite-backend
+        image: "{{ docker_registry }}/scolarite-backend:{{ backend_version }}"
+        state: started
+        ports:
+          - "8080:8080"
+        env:
+          SPRING_PROFILES_ACTIVE: "prod"
+        restart_policy: always
+
+    - name: Start Frontend Container
+      docker_container:
+        name: scolarite-frontend
+        image: "{{ docker_registry }}/scolarite-frontend:{{ frontend_version }}"
+        state: started
+        ports:
+          - "80:80"
+        restart_policy: always 

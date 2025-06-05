@@ -1,0 +1,18 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  trigger-jenkins:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Jenkins Pipeline
+        uses: jenkinsci/github-actions-plugin@master
+        with:
+          jenkins-url: ${{ secrets.JENKINS_URL }}
+          jenkins-token: ${{ secrets.JENKINS_TOKEN }}
+          job-name: 'scolarite-pipeline' 

@@ -1,0 +1,76 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_REGISTRY = 'localhost:5000'
+        BACKEND_IMAGE = 'scolarite-backend'
+        FRONTEND_IMAGE = 'scolarite-frontend'
+    }
+    
+    stages {
+        stage('Build Backend') {
+            steps {
+                dir('scolarite-backend') {
+                    sh './mvnw clean package -DskipTests'
+                }
+            }
+        }
+        
+        stage('Build Frontend') {
+            steps {
+                dir('Scholarite_frontend') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
+            }
+        }
+        
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    // Build Backend Image
+                    docker.build("${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER}")
+                    
+                    // Build Frontend Image
+                    docker.build("${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER}")
+                }
+            }
+        }
+        
+        stage('Push Docker Images') {
+            steps {
+                script {
+                    // Push Backend Image
+                    docker.withRegistry("http://${DOCKER_REGISTRY}") {
+                        docker.image("${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER}").push()
+                    }
+                    
+                    // Push Frontend Image
+                    docker.withRegistry("http://${DOCKER_REGISTRY}") {
+                        docker.image("${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER}").push()
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy with Ansible') {
+            steps {
+                dir('ansible') {
+                    sh 'ansible-playbook -i inventory.yml deploy.yml -e "backend_version=${BUILD_NUMBER} frontend_version=${BUILD_NUMBER}"'
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+} 
