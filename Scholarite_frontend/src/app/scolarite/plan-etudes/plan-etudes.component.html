@@ -1,0 +1,198 @@
+<div class="plan-etudes-container">
+  <header class="header">
+    <h1 class="title">Plan d'Étude</h1>
+  </header>
+
+  <!-- Alertes -->
+  <div class="alerts">
+    <div *ngIf="error" class="alert alert-error">
+      <span class="material-icons">error</span>
+      <span>{{ error }}</span>
+      <button class="btn-close" (click)="error = null">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div *ngIf="success && planEtude" class="alert alert-success">
+      <span class="material-icons">check_circle</span>
+      <span>Plan d'étude généré avec succès</span>
+      <button class="btn-close" (click)="success = false">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Formulaire de génération de plan d'étude -->
+  <section class="card">
+    <div class="card-content">
+      <h2 class="section-title">Consulter les éléments de modules non validés</h2>
+
+      <form (ngSubmit)="generatePlanEtude()">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="matricule">Matricule de l'étudiant<span class="required">*</span></label>
+            <input 
+              type="text" 
+              id="matricule" 
+              [(ngModel)]="matricule" 
+              name="matricule" 
+              placeholder="Ex: 23083" 
+              class="form-control"
+              [ngClass]="{'invalid': error && !matricule}"
+              required>
+            <div *ngIf="error && !matricule" class="error-message">
+              Le matricule est obligatoire
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="semestre">Semestre<span class="required">*</span></label>
+            <select 
+              id="semestre" 
+              [(ngModel)]="selectedSemestreId" 
+              name="semestre" 
+              class="form-control"
+              [ngClass]="{'invalid': error && !selectedSemestreId}"
+              required>
+              <option [ngValue]="null">Sélectionner un semestre</option>
+              <option *ngFor="let semestre of semestres" [ngValue]="semestre.idSemestre">
+                {{ semestre.semestre }} - {{ semestre.annee }}
+              </option>
+            </select>
+            <div *ngIf="error && !selectedSemestreId" class="error-message">
+              Le semestre est obligatoire
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="loading">
+            <span *ngIf="loading" class="spinner"></span>
+            <span class="material-icons">description</span>
+            <span>Générer le plan d'étude</span>
+          </button>
+          <button type="button" class="btn-secondary" (click)="reset()">
+            <span class="material-icons">refresh</span>
+            <span>Réinitialiser</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Résultats du plan d'étude -->
+  <section *ngIf="planEtude" class="card mt-4">
+    <div class="card-content">
+      <!-- Informations de l'étudiant -->
+      <div class="info-header">
+        <h2 class="section-title">Informations de l'étudiant</h2>
+      </div>
+      
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Matricule</span>
+          <span class="info-value">{{ planEtude.matricule }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Nom</span>
+          <span class="info-value">{{ planEtude.nomEtudiant }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Prénom</span>
+          <span class="info-value">{{ planEtude.prenomEtudiant }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Département</span>
+          <span class="info-value">{{ planEtude.departementCode }} - {{ planEtude.departementNom }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Semestre</span>
+          <span class="info-value">{{ planEtude.semestre }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Total des crédits non validés</span>
+          <span class="info-value credit-badge">{{ planEtude.totalCredits }}</span>
+        </div>
+      </div>
+
+      <!-- Message de blocage du semestre -->
+      <div *ngIf="planEtude.semestreBloque" class="alert alert-error mt-4">
+        <span class="material-icons">block</span>
+        <div class="alert-content">
+          <h3>Accès au semestre bloqué</h3>
+          <p>{{ planEtude.messageBloquage }}</p>
+          <div class="note mt-2">
+            <strong>Note :</strong> Vous devez valider suffisamment de modules des semestres précédents avant de pouvoir accéder à ce semestre.
+          </div>
+        </div>
+      </div>
+
+      <!-- Modules par UE (affiché seulement si le semestre n'est pas bloqué) -->
+      <div *ngIf="!planEtude.semestreBloque" class="modules-container">
+        <div *ngFor="let ue of planEtude.modulesParUE | keyvalue" class="module-section">
+          <h3 class="ue-title">Unité d'Enseignement: {{ ue.key }}</h3>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Code EM</th>
+                  <th>Intitulé</th>
+                  <th>Crédits</th>
+                  <th>Note</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let module of ue.value">
+                  <td class="code-em">{{ module.codeEM }}</td>
+                  <td class="intitule">{{ module.intitule }}</td>
+                  <td class="credits">{{ module.nombreCredits }}</td>
+                  <td class="note">
+                    <span *ngIf="planEtude.notesModules && planEtude.notesModules[module.codeEM] !== undefined"
+                          [ngClass]="{'text-danger': !isModuleValidated(module.codeEM), 
+                                      'text-success': isModuleValidated(module.codeEM)}">
+                      {{ planEtude.notesModules[module.codeEM] | number:'1.2-2' }}/20
+                      
+                      <span *ngIf="isModuleValidated(module.codeEM)" class="validation-badge" 
+                            [class]="getValidationBadgeClass(module.codeEM)">
+                        {{ getValidationLabel(module.codeEM) }}
+                      </span>
+                    </span>
+                    <span *ngIf="!planEtude.notesModules || planEtude.notesModules[module.codeEM] === undefined">
+                      -
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Note explicative sur les modules affichés -->
+        <div class="info-card mt-4">
+          <div class="info-card-content">
+            <span class="material-icons">info</span>
+            <p>
+              Les modules listés ci-dessus sont ceux du département {{ planEtude.departementCode }} et des pôles communs (HE et ST) que l'étudiant n'a pas encore validés. 
+              <span *ngIf="planEtude.semestre.includes('S3')"><strong>Pour le semestre S3, les modules non validés du semestre S1 sont également inclus.</strong></span>
+              <span *ngIf="planEtude.semestre.includes('S4')"><strong>Pour le semestre S4, les modules non validés du semestre S2 sont également inclus.</strong></span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Note explicative sur les règles de validation -->
+        <div class="info-card validation-rules mt-3">
+          <div class="info-card-content">
+            <span class="material-icons">school</span>
+            <div>
+              <p class="mb-2">Un module peut être validé de trois façons:</p>
+              <ul class="validation-rules-list">
+                <li><strong>Note ≥ 10/20</strong>: Validation directe</li>
+                <li><strong>Note ≥ 6/20 et moyenne de l'UE ≥ 10/20</strong>: Validation par compensation interne (au sein de l'UE)</li>
+                <li><strong>Note ≥ 6/20, moyenne de l'UE ≥ 8/20 et moyenne générale ≥ 10/20</strong>: Validation par compensation externe</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div> 

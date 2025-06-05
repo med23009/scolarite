@@ -1,0 +1,355 @@
+<div class="programme-container">
+
+
+  <!-- Controls Section -->
+  <section class="controls-section">
+    <div class="search-filter-container">
+      <div class="search-input-wrapper">
+        <span class="search-icon">
+          <span class="material-icons">search</span>
+        </span>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Rechercher..."
+          [(ngModel)]="searchTerm"
+          (keyup)="applyFilter()">
+      </div>
+
+      <div class="filter-wrapper">
+        <select 
+          class="filter-select" 
+          [(ngModel)]="selectedSemestre" 
+          (change)="onSemestreChange()">
+          <option [ngValue]="null">Tous les semestres</option>
+          <option *ngFor="let sem of semestres" [ngValue]="sem.idSemestre">
+            {{ sem.semestre }} ({{ sem.annee }})
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <div class="file-input-wrapper">
+        <input 
+          type="file" 
+          id="excelFile" 
+          accept=".xlsx,.xls" 
+          (change)="onFileSelected($event)" 
+          [disabled]="importInProgress">
+        <label for="excelFile" class="btn-success">
+          <span class="material-icons">upload_file</span>
+          <span>Importer Excel</span>
+        </label>
+      </div>
+      <button class="btn-primary" (click)="showAddForm()">
+        <span class="material-icons">add</span>
+        <span>Ajouter</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Alerts -->
+  <div class="alerts">
+    <div *ngIf="error" class="alert alert-error">
+      <span class="material-icons">error</span>
+      <span>{{ error }}</span>
+    </div>
+    <div *ngIf="success" class="alert alert-success">
+      <span class="material-icons">check_circle</span>
+      <span>{{ success }}</span>
+    </div>
+  </div>
+
+  <!-- Form Section -->
+  <section class="card" *ngIf="showForm">
+    <div class="card-content">
+      <h2 class="section-title">{{ editMode ? 'Modifier' : 'Ajouter' }}</h2>
+
+      <!-- Form Type Selector -->
+      <div class="form-type-selector">
+        <label class="radio-option">
+          <input type="radio" name="formType" [value]="'ue'" [(ngModel)]="formType">
+          <span class="radio-label">Unité d'Enseignement</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="formType" [value]="'em'" [(ngModel)]="formType">
+          <span class="radio-label">Élément de Module</span>
+        </label>
+      </div>
+
+      <!-- UE Form -->
+      <form *ngIf="formType === 'ue'" [formGroup]="ueForm" (ngSubmit)="submitUEForm()">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="codeUE">Code UE<span class="required">*</span></label>
+            <input 
+              type="text" 
+              id="codeUE" 
+              formControlName="codeUE" 
+              placeholder="Ex: INFO101"
+              [ngClass]="{'invalid': submittedUE && ueF['codeUE'].errors}">
+            <div *ngIf="submittedUE && ueF['codeUE'].errors" class="error-message">
+              <div *ngIf="ueF['codeUE'].errors['required']">Le code UE est obligatoire</div>
+              <div *ngIf="ueF['codeUE'].errors['maxlength']">Maximum 10 caractères</div>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="intitule">Intitulé<span class="required">*</span></label>
+            <input 
+              type="text" 
+              id="intitule" 
+              formControlName="intitule" 
+              placeholder="Ex: Introduction à l'informatique"
+              [ngClass]="{'invalid': submittedUE && ueF['intitule'].errors}">
+            <div *ngIf="submittedUE && ueF['intitule'].errors" class="error-message">
+              <div *ngIf="ueF['intitule'].errors['required']">L'intitulé est obligatoire</div>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="semestre">Semestre</label>
+            <select id="semestre" formControlName="semestre">
+              <option [ngValue]="null">-- Sélectionner --</option>
+              <option *ngFor="let sem of semestres" [ngValue]="sem.idSemestre">
+                {{ sem.semestre }} ({{ sem.annee }})
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="loading">
+            <span *ngIf="loading" class="spinner"></span>
+            <span>{{ editMode ? 'Mettre à jour' : 'Enregistrer' }}</span>
+          </button>
+          <button type="button" class="btn-secondary" (click)="cancelForm()">
+            <span>Annuler</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- EM Form -->
+      <form *ngIf="formType === 'em'" [formGroup]="emForm" (ngSubmit)="submitEMForm()">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="codeEU">Code UE<span class="required">*</span></label>
+            <select 
+              id="codeEU" 
+              formControlName="codeEU"
+              [ngClass]="{'invalid': submittedEM && emF['codeEU'].errors}">
+              <option [ngValue]="null">-- Sélectionner --</option>
+              <option *ngFor="let ue of uniteEnseignements" [ngValue]="ue.codeUE">
+                {{ ue.codeUE }} - {{ ue.intitule }}
+              </option>
+            </select>
+            <div *ngIf="submittedEM && emF['codeEU'].errors" class="error-message">
+              <div *ngIf="emF['codeEU'].errors['required']">L'UE est obligatoire</div>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="codeEM">Code EM<span class="required">*</span></label>
+            <input 
+              type="text" 
+              id="codeEM" 
+              formControlName="codeEM" 
+              placeholder="Ex: TP1"
+              [ngClass]="{'invalid': submittedEM && emF['codeEM'].errors}">
+            <div *ngIf="submittedEM && emF['codeEM'].errors" class="error-message">
+              <div *ngIf="emF['codeEM'].errors['required']">Le code EM est obligatoire</div>
+              <div *ngIf="emF['codeEM'].errors['maxlength']">Maximum 10 caractères</div>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="intitule">Intitulé<span class="required">*</span></label>
+            <input 
+              type="text" 
+              id="intitule" 
+              formControlName="intitule" 
+              placeholder="Ex: Travaux Pratiques d'Algo"
+              [ngClass]="{'invalid': submittedEM && emF['intitule'].errors}">
+            <div *ngIf="submittedEM && emF['intitule'].errors" class="error-message">
+              <div *ngIf="emF['intitule'].errors['required']">L'intitulé est obligatoire</div>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="nombreCredits">Nombre de crédits</label>
+            <input 
+              type="number" 
+              id="nombreCredits" 
+              formControlName="nombreCredits" 
+              min="0" 
+              max="30">
+          </div>
+
+          
+
+          <div class="form-field">
+            <label for="semestre">Semestre</label>
+            <select id="semestre" formControlName="semestre">
+              <option [ngValue]="null">-- Sélectionner --</option>
+              <option *ngFor="let sem of semestres" [ngValue]="sem.idSemestre">
+                {{ sem.semestre }} ({{ sem.annee }})
+              </option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="responsableEM">Responsable</label>
+            <input 
+              type="text" 
+              id="responsableEM" 
+              formControlName="responsableEM" 
+              placeholder="Nom du responsable">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="loading">
+            <span *ngIf="loading" class="spinner"></span>
+            <span>{{ editMode ? 'Mettre à jour' : 'Enregistrer' }}</span>
+          </button>
+          <button type="button" class="btn-secondary" (click)="cancelForm()">
+            <span>Annuler</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Programs List Section -->
+  <section class="card" *ngIf="!showForm">
+    <div class="card-content">
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-container">
+        <div class="spinner large"></div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loading && groupedProgrammes.length === 0" class="empty-state">
+        <span class="material-icons">school</span>
+        <p>Aucun programme d'études trouvé</p>
+        <span *ngIf="searchTerm">Modifiez votre recherche pour voir plus de résultats</span>
+      </div>
+
+      <!-- Table -->
+      <div *ngIf="!loading && groupedProgrammes.length > 0" class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Code UE</th>
+              <th>Intitulé UE</th>
+              <th>Code EM</th>
+              <th>Intitulé EM</th>
+              <th>Semestre</th>
+              <th>Crédits</th>
+              <th>Responsable</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let group of groupedProgrammes">
+              <!-- First row with UE info and first EM -->
+              <tr>
+                <td [attr.rowspan]="group.modules.length > 0 ? group.modules.length : 1" class="ue-cell">
+                  <span class="ue-code">{{ group.ue.codeUE }}</span>
+                </td>
+                <td [attr.rowspan]="group.modules.length > 0 ? group.modules.length : 1" class="ue-cell">
+                  {{ group.ue.intitule }}
+                </td>
+                <td *ngIf="group.modules.length > 0">
+                  <span class="em-code">{{ group.modules[0].codeEM }}</span>
+                </td>
+                <td *ngIf="group.modules.length > 0">{{ group.modules[0].intitule }}</td>
+                <td *ngIf="group.modules.length > 0">
+                  <span class="semester-badge">{{ getSemestreName(group.modules[0].semestre) }}</span>
+                </td>
+                <td *ngIf="group.modules.length > 0" class="text-center">
+                  {{ group.modules[0].nombreCredits || 0 }}
+                </td>
+                <td *ngIf="group.modules.length > 0">
+                  {{ group.modules[0].responsableEM || '-' }}
+                </td>
+                <td *ngIf="group.modules.length > 0" class="actions-cell">
+                  <button class="btn-icon btn-edit" (click)="editEM(group.modules[0])" title="Modifier EM">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button class="btn-icon btn-delete" (click)="deleteEM(group.modules[0].idEM!)" title="Supprimer EM">
+                    <span class="material-icons">delete</span>
+                  </button>
+                </td>
+                <!-- Empty cells if no EMs -->
+                <td *ngIf="group.modules.length === 0" colspan="5" class="empty-modules">
+                  Pas d'éléments de module
+                </td>
+                <td *ngIf="group.modules.length === 0" class="actions-cell">
+                  <button class="btn-icon btn-edit" (click)="editUE(group.ue)" title="Modifier UE">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button class="btn-icon btn-delete" (click)="deleteUE(group.ue.idUE!)" title="Supprimer UE">
+                    <span class="material-icons">delete</span>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Rest of EMs in this UE -->
+              <ng-container *ngFor="let em of group.modules; let i = index">
+                <tr *ngIf="i > 0">
+                  <td>
+                    <span class="em-code">{{ em.codeEM }}</span>
+                  </td>
+                  <td>{{ em.intitule }}</td>
+                  <td>
+                    <span class="semester-badge">{{ getSemestreName(em.semestre) }}</span>
+                  </td>
+                  <td class="text-center">{{ em.nombreCredits || 0 }}</td>
+                  <td>{{ em.responsableEM || '-' }}</td>
+                  <td class="actions-cell">
+                    <button class="btn-icon btn-edit" (click)="editEM(em)" title="Modifier EM">
+                      <span class="material-icons">edit</span>
+                    </button>
+                    <button class="btn-icon btn-delete" (click)="deleteEM(em.idEM!)" title="Supprimer EM">
+                      <span class="material-icons">delete</span>
+                    </button>
+                  </td>
+                </tr>
+              </ng-container>
+
+              <!-- UE actions row -->
+              <tr class="ue-actions-row">
+                <td colspan="8">
+                  <div class="ue-actions">
+                    <button class="action-button edit-button" (click)="editUE(group.ue)">
+                      <span class="material-icons">settings</span>
+                      <span>Modifier UE</span>
+                    </button>
+                    <button class="action-button add-button" (click)="showAddEMForUE(group.ue)">
+                      <span class="material-icons">add_circle</span>
+                      <span>Ajouter EM</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Confirmation Dialog -->
+<div class="confirm-dialog" *ngIf="showConfirmDialog">
+  <div class="dialog-content">
+    <h3>Confirmation</h3>
+    <p>{{ confirmMessage }}</p>
+    <div class="dialog-actions">
+      <button class="btn-secondary" (click)="cancelDelete()">Annuler</button>
+      <button class="btn-danger" (click)="confirmDelete()">Supprimer</button>
+    </div>
+  </div>
+</div>

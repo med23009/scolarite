@@ -1,0 +1,532 @@
+// Variables - Green color scheme (matching the programme component)
+$primary: #2e7d32; // Green 800
+$primary-hover: #1b5e20; // Green 900
+$primary-light: rgba($primary, 0.1);
+$success: #43a047; // Green 600
+$success-hover: #388e3c; // Green 700
+$success-light: #e8f5e9; // Green 50
+$warning: #ffc107;
+$warning-hover: #e0a800;
+$danger: #dc3545;
+$danger-hover: #c82333;
+$danger-light: #fdecea;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+$green-dark: #1b5e20; // Green 900
+$white: #fff;
+$radius: 8px;
+$shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+$transition: all 0.2s ease;
+
+// Base styles
+:host {
+  display: block;
+  padding: 0;
+  margin: 0;
+  background-color: #f7f9fc;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  color: $gray-800;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.pv-container {
+  width: 100%;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// Card component
+.card {
+  background-color: $white;
+  border-radius: $radius;
+  box-shadow: $shadow;
+  overflow: hidden;
+  border: 1px solid $gray-300;
+  
+  &.main-card {
+    margin-bottom: 1rem;
+  }
+  
+  &.history-card {
+    border-top: 3px solid $primary;
+  }
+  
+  .card-header {
+    background-color: $gray-100;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid $gray-300;
+    
+    h1, h2 {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: $green-dark;
+      
+      .material-icons {
+        font-size: 1.5rem;
+        color: $primary;
+      }
+    }
+    
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+}
+
+// Alerts
+.alerts-container {
+  padding: 0 1.5rem;
+  margin-top: 1rem;
+}
+
+.alert {
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: $radius;
+  display: flex;
+  align-items: center;
+  position: relative;
+  animation: fadeIn 0.3s ease;
+  
+  .material-icons {
+    margin-right: 0.75rem;
+    font-size: 1.25rem;
+  }
+  
+  .close-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: inherit;
+    opacity: 0.7;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    
+    &:hover {
+      opacity: 1;
+    }
+    
+    .material-icons {
+      font-size: 1rem;
+      margin-right: 0;
+    }
+  }
+  
+  &.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    border-left: 4px solid $danger;
+  }
+  
+  &.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    border-left: 4px solid $success;
+  }
+}
+
+// PV Info Section
+.pv-info {
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  background-color: $gray-100;
+  border-radius: $radius;
+  border: 1px solid $gray-300;
+  
+  .info-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    
+    h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: $green-dark;
+    }
+    
+    .material-icons {
+      color: $primary;
+    }
+  }
+  
+  .info-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .info-item {
+    display: flex;
+    align-items: center;
+    
+    label {
+      font-weight: 600;
+      margin-right: 0.75rem;
+      color: $gray-700;
+      min-width: 100px;
+    }
+    
+    .value {
+      color: $gray-900;
+      font-weight: 500;
+    }
+    
+    .skeleton-loader {
+      height: 1rem;
+      width: 150px;
+      background: linear-gradient(90deg, $gray-200 25%, $gray-300 50%, $gray-200 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: 4px;
+    }
+  }
+}
+
+// PV Form
+.pv-form {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: $white;
+  border-radius: $radius;
+  border: 1px solid $gray-300;
+  
+  .form-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: $green-dark;
+    }
+    
+    .material-icons {
+      color: $primary;
+    }
+  }
+  
+  .description {
+    margin-bottom: 1.5rem;
+    color: $gray-600;
+    line-height: 1.5;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: $gray-800;
+      
+      .required {
+        color: $danger;
+        margin-left: 0.25rem;
+      }
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid $gray-300;
+      border-radius: $radius;
+      font-size: 0.95rem;
+      color: $gray-800;
+      transition: $transition;
+      
+      &:focus {
+        outline: none;
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba($primary, 0.1);
+      }
+      
+      &.is-invalid {
+        border-color: $danger;
+        background-color: rgba($danger, 0.05);
+      }
+    }
+    
+    .form-text {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      color: $gray-600;
+      
+      .info-icon {
+        font-size: 1rem;
+        color: $gray-500;
+      }
+    }
+    
+    .invalid-feedback {
+      display: block;
+      width: 100%;
+      margin-top: 0.25rem;
+      font-size: 0.875rem;
+      color: $danger;
+    }
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+}
+
+// Buttons
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: $radius;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: $transition;
+  border: none;
+  white-space: nowrap;
+  
+  .material-icons {
+    font-size: 1.25rem;
+  }
+  
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+.btn-primary {
+  background-color: $primary;
+  color: $white;
+  
+  &:hover:not(:disabled) {
+    background-color: $primary-hover;
+  }
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: $primary;
+  border: 1px solid $primary;
+  
+  &:hover:not(:disabled) {
+    background-color: rgba($primary, 0.1);
+  }
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: $radius;
+  border: none;
+  cursor: pointer;
+  transition: $transition;
+  background-color: transparent;
+  
+  &:hover {
+    background-color: $gray-200;
+  }
+  
+  .material-icons {
+    font-size: 1.1rem;
+    color: $gray-700;
+  }
+}
+
+// PV Info Box
+.pv-info-box {
+  background-color: $gray-100;
+  padding: 1.25rem;
+  border-radius: $radius;
+  border: 1px solid $gray-300;
+  margin-top: 1rem;
+  
+  .info-box-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    
+    h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: $green-dark;
+    }
+    
+    .material-icons {
+      color: $primary;
+    }
+  }
+  
+  .info-box-content {
+    color: $gray-700;
+    
+    p {
+      margin-bottom: 0.75rem;
+      line-height: 1.5;
+    }
+    
+    ul {
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+      
+      li {
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+}
+
+// History Table
+.table-responsive {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  
+  th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid $gray-200;
+  }
+  
+  th {
+    background-color: $gray-100;
+    font-weight: 600;
+    color: $gray-800;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    white-space: nowrap;
+  }
+  
+  tbody tr {
+    transition: $transition;
+    
+    &:hover {
+      background-color: rgba($primary, 0.03);
+    }
+  }
+  
+  .actions-cell {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+// Spinner
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: $white;
+  animation: spin 0.8s linear infinite;
+  margin-right: 0.5rem;
+}
+
+// Animations
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .pv-container {
+    padding: 1rem;
+  }
+  
+  .card .card-body {
+    padding: 1rem;
+  }
+  
+  .pv-form {
+    padding: 1rem;
+  }
+  
+  .pv-info .info-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

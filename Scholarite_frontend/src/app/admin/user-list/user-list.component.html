@@ -1,0 +1,79 @@
+<div class="user-container">
+
+
+  <nav class="nav-tabs">
+    <a class="tab" routerLink="/admin/users/new" routerLinkActive="active">
+      <span class="material-icons">person_add</span>
+      <span>Créer Utilisateur</span>
+    </a>
+    <a class="tab active">
+      <span class="material-icons">list</span>
+      <span>Liste des Utilisateurs</span>
+    </a>
+  </nav>
+
+  <!-- Alerts -->
+  <div class="alerts">
+    <div *ngIf="error" class="alert alert-error">
+      <span class="material-icons">error</span>
+      <span>{{ error }}</span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <section class="card">
+    <div class="card-content">
+      
+      
+      
+      
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-container">
+        <div class="spinner large"></div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loading && users.length === 0" class="empty-state">
+        <span class="material-icons">people_outline</span>
+        <p>Aucun utilisateur trouvé</p>
+      </div>
+
+      <!-- Table -->
+      <div *ngIf="!loading && users.length > 0" class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nom</th>
+              <th>Prénom</th>
+              <th>Email</th>
+              <th>Rôle</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users">
+              <td data-label="ID">{{ user.idMembre }}</td>
+              <td data-label="Nom">{{ user.nom }}</td>
+              <td data-label="Prénom">{{ user.prenom }}</td>
+              <td data-label="Email">
+                <a href="mailto:{{ user.email }}" class="email-link">{{ user.email }}</a>
+              </td>
+              <td data-label="Rôle">
+                <span class="role-badge">{{ user.role }}</span>
+              </td>
+              <td data-label="Actions" class="actions-cell">
+                <button class="btn-icon btn-edit" (click)="editUser(user.idMembre)" title="Modifier">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="btn-icon btn-delete" (click)="deleteUser(user.idMembre)" title="Supprimer">
+                  <span class="material-icons">delete</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>

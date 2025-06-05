@@ -1,0 +1,202 @@
+<!-- src/app/admin/note/note.component.html -->
+<div class="card">
+    <div class="card-header">
+      <h1>Gestion des Notes</h1>
+      <button class="btn btn-primary" (click)="toggleImportForm()">
+        <i class="material-icons">{{ showImportForm ? 'close' : 'add' }}</i>
+        {{ showImportForm ? 'Fermer' : 'Importer des notes' }}
+      </button>
+    </div>
+  
+    <!-- Alertes -->
+    <div *ngIf="error" class="alert alert-danger">
+      <i class="material-icons">error</i> {{ error }}
+    </div>
+    <div *ngIf="success" class="alert alert-success">
+      <i class="material-icons">check_circle</i> {{ success }}
+    </div>
+  
+    <div class="card-body">
+      <!-- Section d'importation -->
+      <div class="import-section" *ngIf="showImportForm">
+        <h2>Importer des notes depuis Excel</h2>
+        
+        <form [formGroup]="importForm" (ngSubmit)="onImportSubmit()">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="elementModule">Élément de Module*</label>
+              <select formControlName="elementModule" id="elementModule" required>
+                <option value="">-- Sélectionner un module --</option>
+                <option *ngFor="let module of elementModules" [value]="module.idEM">
+                  {{ module.codeEM }} - {{ module.intitule }}
+                </option>
+              </select>
+              <div *ngIf="importForm.get('elementModule')?.errors?.['required'] && importForm.get('elementModule')?.touched" class="invalid-feedback">
+                L'élément de module est obligatoire
+              </div>
+            </div>
+  
+            <div class="form-group">
+              <label for="idSemestre">Semestre*</label>
+              <select formControlName="idSemestre" id="idSemestre" required>
+                <option value="">-- Sélectionner un semestre --</option>
+                <option *ngFor="let sem of semestres" [value]="sem.idSemestre">
+                  {{ sem.semestre }} (Année: {{ sem.annee }})
+                </option>
+              </select>
+              <div *ngIf="importForm.get('idSemestre')?.errors?.['required'] && importForm.get('idSemestre')?.touched" class="invalid-feedback">
+                Le semestre est obligatoire
+              </div>
+            </div>
+          </div>
+  
+          <div class="file-import-section">
+            <div class="file-input-wrapper">
+              <input type="file" id="noteFile" accept=".xlsx,.xls" (change)="onFileSelected($event)" [disabled]="submitting">
+              <label for="noteFile">Choisir un fichier Excel</label>
+              <span *ngIf="selectedFile">{{ selectedFile.name }}</span>
+            </div>
+  
+            <div class="csv-info">
+              <p><strong>Format requis:</strong> Le fichier doit contenir au minimum les colonnes suivantes :</p>
+              <ul>
+                <li><code>matricule</code> - Matricule de l'étudiant</li>
+                <li><code>devoir</code> - Note de devoir</li>
+                <li><code>examen</code> - Note d'examen</li>
+                <li><code>rattrapage</code> (optionnel) - Note de rattrapage</li>
+              </ul>
+            </div>
+  
+            <div class="action-buttons">
+              <button type="submit" class="btn btn-primary" [disabled]="importForm.invalid || !selectedFile || submitting">
+                <span *ngIf="submitting" class="spinner-border spinner-border-sm"></span>
+                {{ submitting ? 'Importation en cours...' : 'Importer les notes' }}
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="resetImportForm()">
+                Réinitialiser
+              </button>
+            </div>
+          </div>
+        </form>
+  
+        <!-- Résultats de l'import -->
+        <div *ngIf="importResult && importResult.errors && importResult.errors.length > 0" class="import-results error-results">
+          <h3>Erreurs lors de l'import</h3>
+          <ul>
+            <li *ngFor="let error of importResult.errors">{{ error }}</li>
+          </ul>
+        </div>
+  
+        <div *ngIf="importResult && importResult.importedNotes && importResult.importedNotes.length > 0" class="import-results success-results">
+          <h3>Notes importées avec succès</h3>
+          <p>{{ importResult.importedNotes.length }} notes ont été importées.</p>
+          
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Matricule</th>
+                  <th>Module</th>
+                  <th>Devoir</th>
+                  <th>Examen</th>
+                  <th>Rattrapage</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let note of importResult.importedNotes.slice(0, 10)">
+                  <td>{{ note.matriculeEtudiant }}</td>
+                  <td>{{ note.codeEM }}</td>
+                  <td>{{ note.noteDevoir }}</td>
+                  <td>{{ note.noteExamen }}</td>
+                  <td>{{ note.noteRattrapage || '-' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div *ngIf="importResult.importedNotes.length > 10" class="more-results">
+            <p>... et {{ importResult.importedNotes.length - 10 }} autres notes</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Section de liste des notes -->
+      <div class="notes-list-section" [class.mt-4]="showImportForm">
+        <h2 *ngIf="showImportForm">Liste des Notes</h2>
+        
+        <!-- Filtres -->
+        <div class="filters-section">
+          <div class="search-input">
+            <i class="material-icons">search</i>
+            <input type="text" [(ngModel)]="searchTerm" (keyup)="onSearch()" placeholder="Rechercher par matricule, nom...">
+          </div>
+          
+          <div class="filter-dropdown">
+            <label for="moduleFilter">Filtrer par module:</label>
+            <select id="moduleFilter" [(ngModel)]="selectedModule" (change)="onModuleChange()">
+              <option value="">Tous les modules</option>
+              <option *ngFor="let module of elementModules" [value]="module.codeEM">
+                {{ module.codeEM }} - {{ module.intitule }}
+              </option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Loader -->
+        <div *ngIf="loading" class="text-center mt-3 mb-3">
+          <div class="spinner-border"></div>
+        </div>
+        
+        <!-- Tableau des notes -->
+        <div class="table-responsive" *ngIf="!loading && filteredNotes.length > 0">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Matricule</th>
+                <th>Nom & Prénom</th>
+                <th>Module</th>
+                <th>Devoir (40%)</th>
+                <th>Examen (60%)</th>
+                <th>Rattrapage</th>
+                <th>Total</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let note of filteredNotes">
+                <td>{{ note.etudiant?.matricule || note.matriculeEtudiant }}</td>
+                <td>
+                  <span *ngIf="note.etudiant?.nom && note.etudiant?.prenom">
+                    {{ note.etudiant?.nom }} {{ note.etudiant?.prenom }}
+                  </span>
+                  <span *ngIf="!note.etudiant?.nom || !note.etudiant?.prenom" class="text-muted">
+                    (Étudiant non trouvé: {{ note.etudiant?.matricule || note.matriculeEtudiant }})
+                  </span>
+                </td>
+                <td>{{ note.elementModule?.codeEM }}</td>
+                <td>{{ note.noteDevoir }}</td>
+                <td>{{ note.noteExamen }}</td>
+                <td>{{ note.noteRattrapage || '-' }}</td>
+                <td [ngClass]="{'text-success': calculateTotal(note) >= 10, 'text-danger': calculateTotal(note) < 10}">
+                  <strong>{{ calculateTotal(note) }}</strong>
+                </td>
+                <td class="actions">
+                  <button class="btn-action delete" (click)="deleteNote(note.idNote!)" title="Supprimer">
+                    <i class="material-icons">delete</i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Message si aucune note -->
+        <div *ngIf="!loading && filteredNotes.length === 0" class="empty-state">
+          <i class="material-icons">assignment</i>
+          <p>Aucune note trouvée</p>
+          <span *ngIf="searchTerm || selectedModule">Essayez de modifier vos critères de recherche</span>
+          <span *ngIf="!searchTerm && !selectedModule">Importez des notes pour commencer</span>
+        </div>
+      </div>
+    </div>
+  </div>

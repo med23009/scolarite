@@ -1,0 +1,94 @@
+<div class="note-edit-container">
+    <header class="edit-header">
+      <h3 class="edit-title">Modifier la note de l'étudiant</h3>
+    </header>
+    
+    <form (ngSubmit)="saveNote()" #editForm="ngForm" *ngIf="editedNote" class="edit-form">
+      <!-- Student information section -->
+      <section class="form-section student-info-section">
+        <div class="form-row">
+          <div class="form-field field-matricule">
+            <label class="field-label">Matricule</label>
+            <input class="field-input readonly-input"
+                   [value]="editedNote.etudiant?.matricule || editedNote.matriculeEtudiant"
+                   readonly />
+          </div>
+          
+          <div class="form-field field-name">
+            <label class="field-label">Nom & Prénom</label>
+            <input class="field-input readonly-input"
+                   [value]="(editedNote.etudiant?.nom || '') + ' ' + (editedNote.etudiant?.prenom || '')"
+                   readonly />
+          </div>
+        </div>
+      </section>
+      
+      <!-- Grades section -->
+      <section class="form-section grades-section">
+        <div class="form-row">
+          <div class="form-field field-devoir">
+            <label class="field-label">Devoir (40%)</label>
+            <input type="number"
+                   class="field-input"
+                   [(ngModel)]="editedNote.noteDevoir"
+                   name="noteDevoir"
+                   min="0"
+                   max="20"
+                   required
+                   (input)="updateTotal()" />
+          </div>
+          
+          <div class="form-field field-examen">
+            <label class="field-label">Examen (60%)</label>
+            <input type="number"
+                   class="field-input"
+                   [(ngModel)]="editedNote.noteExamen"
+                   name="noteExamen"
+                   min="0"
+                   max="20"
+                   required
+                   (input)="updateTotal()" />
+          </div>
+          
+          <div class="form-field field-rattrapage">
+            <label class="field-label">Note Rattrapage (optionnelle)</label>
+            <input type="number"
+                   class="field-input"
+                   [(ngModel)]="editedNote.noteRattrapage"
+                   name="noteRattrapage"
+                   min="0"
+                   max="20"
+                   (input)="updateTotal()" />
+          </div>
+        </div>
+      </section>
+      
+      <!-- Total section -->
+      <section class="form-section total-section">
+        <div class="form-row">
+          <div class="form-field field-total">
+            <label class="field-label">Total</label>
+            <input type="text"
+                   class="field-input readonly-input"
+                   [value]="totalNote"
+                   [ngClass]="{'score-passing': totalNote >= 10, 'score-failing': totalNote < 10}"
+                   readonly />
+          </div>
+        </div>
+      </section>
+      
+      <!-- Actions section -->
+      <section class="form-section actions-section">
+        <div class="button-group">
+          <button type="submit" class="action-button save-button" [disabled]="!editForm.form.valid">
+            <i class="material-icons button-icon">save</i>
+            <span class="button-text">Enregistrer</span>
+          </button>
+          <button type="button" class="action-button cancel-button" (click)="cancel()">
+            <i class="material-icons button-icon">cancel</i>
+            <span class="button-text">Annuler</span>
+          </button>
+        </div>
+      </section>
+    </form>
+  </div>

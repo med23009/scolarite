@@ -1,0 +1,466 @@
+// Variables - Changed from blue to green
+$primary: #2e7d32; // Green 800
+$primary-hover: #1b5e20; // Green 900
+$primary-light: rgba($primary, 0.1);
+$success: #43a047; // Green 600
+$success-hover: #388e3c; // Green 700
+$success-light: #e8f5e9; // Green 50
+$warning: #ffc107;
+$warning-hover: #e0a800;
+$danger: #dc3545;
+$danger-hover: #c82333;
+$danger-light: #fdecea;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+$green-dark: #1b5e20; // Green 900
+$white: #fff;
+$radius: 8px;
+$shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+$transition: all 0.2s ease;
+
+// Base styles - Modified to take full screen
+:host {
+  display: block;
+  padding: 0;
+  margin: 0;
+  background-color: #f7f9fc;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  color: $gray-800;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.department-container {
+  width: 100%;
+  padding: 1.5rem;
+}
+
+// Card component
+.card {
+  background-color: $white;
+  border-radius: $radius;
+  box-shadow: $shadow;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  border: 1px solid $gray-300;
+  
+  .card-content {
+    padding: 1.5rem;
+  }
+}
+
+// Typography
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: $green-dark;
+  margin: 0;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: $green-dark;
+  margin: 0 0 1.25rem 0;
+}
+
+.text-muted {
+  color: $gray-600;
+  font-style: italic;
+}
+
+// Header
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem 0;
+}
+
+// Buttons
+.btn-primary, .btn-secondary, .btn-success {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: $radius;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: $transition;
+  border: none;
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .material-icons {
+    font-size: 1.1rem;
+  }
+}
+
+.btn-primary {
+  background-color: $primary;
+  color: $white;
+  
+  &:hover:not(:disabled) {
+    background-color: $primary-hover;
+  }
+}
+
+.btn-secondary {
+  background-color: $gray-200;
+  color: $gray-800;
+  
+  &:hover:not(:disabled) {
+    background-color: $gray-300;
+  }
+}
+
+.btn-success {
+  background-color: $success;
+  color: $white;
+  
+  &:hover:not(:disabled) {
+    background-color: $success-hover;
+  }
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: $radius;
+  border: none;
+  cursor: pointer;
+  transition: $transition;
+  background-color: transparent;
+  
+  .material-icons {
+    font-size: 1.1rem;
+  }
+  
+  &.btn-edit {
+    color: $warning;
+    
+    &:hover {
+      background-color: rgba($warning, 0.1);
+    }
+  }
+  
+  &.btn-delete {
+    color: $danger;
+    
+    &:hover {
+      background-color: rgba($danger, 0.1);
+    }
+  }
+}
+
+// Alerts
+.alerts {
+  margin-bottom: 1.5rem;
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: $radius;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  
+  &.alert-error {
+    background-color: $danger-light;
+    color: $danger;
+    border-left: 4px solid $danger;
+  }
+  
+  &.alert-success {
+    background-color: $success-light;
+    color: $success;
+    border-left: 4px solid $success;
+  }
+  
+  .material-icons {
+    font-size: 1.1rem;
+  }
+}
+
+// Form
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  
+  .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+.form-field {
+  margin-bottom: 0.5rem;
+  
+  label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: $gray-800;
+  }
+  
+  .required {
+    color: $danger;
+    margin-left: 0.25rem;
+  }
+  
+  input, select, textarea {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid $gray-300;
+    border-radius: $radius;
+    font-size: 0.95rem;
+    background-color: $white;
+    transition: $transition;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+    
+    &.invalid {
+      border-color: $danger;
+      background-color: rgba($danger, 0.05);
+    }
+  }
+  
+  .error-message {
+    color: $danger;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+// Import section
+.import-section {
+  margin-bottom: 1.5rem;
+}
+
+.import-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.file-input-wrapper {
+  flex: 1;
+  min-width: 250px;
+  
+  input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+  
+  .file-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background-color: $gray-100;
+    border: 1px dashed $gray-400;
+    border-radius: $radius;
+    cursor: pointer;
+    transition: $transition;
+    color: $gray-700;
+    font-size: 0.9rem;
+    
+    &:hover {
+      background-color: $gray-200;
+    }
+    
+    .material-icons {
+      font-size: 1.1rem;
+      color: $primary;
+    }
+  }
+}
+
+// Table
+.table-container {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  
+  th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+  }
+  
+  th {
+    background-color: $gray-100;
+    font-weight: 600;
+    color: $gray-800;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    border-bottom: 2px solid $gray-300;
+  }
+  
+  tbody tr {
+    border-bottom: 1px solid $gray-200;
+    transition: $transition;
+    
+    &:hover {
+      background-color: rgba($primary, 0.03);
+    }
+    
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  
+  .actions-cell {
+    white-space: nowrap;
+    display: flex;
+    gap: 0.25rem;
+  }
+  
+  .code-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background-color: $primary-light;
+    color: $primary;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.85rem;
+  }
+}
+
+// Loading and empty states
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 0;
+  color: $gray-600;
+  
+  .material-icons {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+  
+  p {
+    font-size: 1rem;
+    margin: 0;
+  }
+}
+
+// Spinner
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: $white;
+  animation: spin 0.8s linear infinite;
+  
+  &.large {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-width: 3px;
+    border-color: rgba($primary, 0.2);
+    border-top-color: $primary;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    
+    .btn-primary {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  .form-grid {
+    display: block;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  .import-controls {
+    flex-direction: column;
+    
+    .btn-success {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  .card .card-content {
+    padding: 1rem;
+  }
+  
+  .data-table {
+    font-size: 0.85rem;
+    
+    th, td {
+      padding: 0.6rem 0.75rem;
+    }
+  }
+}

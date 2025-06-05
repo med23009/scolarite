@@ -1,0 +1,202 @@
+<div class="programme-container">
+ 
+
+  <!-- Alerts -->
+  <div class="alerts" *ngIf="error">
+    <div class="alert alert-error">
+      <span class="material-icons">error</span>
+      <span>{{ error }}</span>
+    </div>
+  </div>
+
+  <!-- Selection Form -->
+  <section class="card selection-card">
+    <div class="card-content">
+      
+      
+      <form [formGroup]="selectionForm" class="selection-form">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="type">Type</label>
+            <select id="type" formControlName="type" class="select-control">
+              <option value="department">Département</option>
+              <option value="pole">Pôle</option>
+            </select>
+          </div>
+
+          <div class="form-field" *ngIf="selectedType === 'department'">
+            <label for="departmentId">Département</label>
+            <select id="departmentId" formControlName="departmentId" class="select-control">
+              <option [value]="null">-- Sélectionner un département --</option>
+              <option *ngFor="let dept of departements" [value]="dept.idDep">
+                {{ dept.codeDep }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-field" *ngIf="selectedType === 'pole'">
+            <label for="poleId">Pôle</label>
+            <select id="poleId" formControlName="poleId" class="select-control">
+              <option [value]="null">-- Sélectionner un pôle --</option>
+              <option *ngFor="let pole of poles" [value]="pole.idPole">
+                {{ pole.codePole }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <section class="card">
+    <div class="card-content">
+      <!-- Loading indicator -->
+      <div *ngIf="loading" class="loading-container">
+        <div class="spinner large"></div>
+      </div>
+
+      <!-- No data message -->
+      <div *ngIf="!loading && programmes.length === 0" class="empty-state">
+        <span class="material-icons">school</span>
+        <p>Aucun programme trouvé.</p>
+      </div>
+
+      <!-- Programmes list -->
+      <div *ngIf="!loading && programmes.length > 0" class="programmes-list">
+        <h2 class="section-title">
+          {{ selectedType === 'department' ? 'Programmes du département' : 'Programmes du pôle' }}:
+          <span class="entity-name">
+            {{ selectedType === 'department'
+               ? (departements | filter:selectedDepartmentId:'idDep')?.intitule
+               : (poles | filter:selectedPoleId:'idPole')?.intitule }}
+          </span>
+        </h2>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Code UE</th>
+                <th>Intitulé UE</th>
+                <th>Code EM</th>
+                <th>Intitulé EM</th>
+                <th>Semestre</th>
+                <th>Crédits</th>
+                <th>Responsable</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody *ngFor="let programme of programmes">
+              <ng-container *ngFor="let em of programme.modules; let first = first; let i = index">
+                <tr [ngClass]="{'first-row': first}">
+                  <td *ngIf="first" [attr.rowspan]="programme.modules.length" class="ue-cell">
+                    <span class="ue-code">{{ programme.ue.codeUE }}</span>
+                  </td>
+                  <td *ngIf="first" [attr.rowspan]="programme.modules.length" class="ue-cell">
+                    {{ programme.ue.intitule }}
+                  </td>
+                  <td><span class="em-code">{{ em.codeEM }}</span></td>
+                  <td>{{ em.intitule }}</td>
+                  <td><span class="semester-badge">{{ em.semestre }}</span></td>
+                  <td class="text-center">{{ em.nombreCredits }}</td>
+                  <td>{{ em.responsableEM || 'Non assigné' }}</td>
+                  <td class="actions-cell">
+                    <button class="btn-icon btn-edit" (click)="onEditUE(programme)" title="Modifier">
+                      <span class="material-icons">edit</span>
+                    </button>
+                    <button class="btn-icon btn-delete" (click)="onDeleteEM(em.idEM)" title="Supprimer">
+                      <span class="material-icons">delete</span>
+                    </button>
+                  </td>
+                </tr>
+              </ng-container>
+              
+              <!-- Edit form row -->
+              <tr *ngIf="editingProgrammeId === programme.ue.idUE" class="edit-row">
+                <td colspan="8" class="edit-cell">
+                  <form [formGroup]="editForm" class="edit-form">
+                    <div class="edit-section">
+                      <h3 class="edit-title">Modifier UE</h3>
+                      <div class="form-grid" [formGroup]="ueFormGroup">
+                        <div class="form-field">
+                          <label for="codeUE">Code UE</label>
+                          <input type="text" id="codeUE" formControlName="codeUE" class="form-input" placeholder="Code UE" />
+                        </div>
+                        <div class="form-field">
+                          <label for="intituleUE">Intitulé UE</label>
+                          <input type="text" id="intituleUE" formControlName="intitule" class="form-input" placeholder="Intitulé UE" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="edit-section">
+                      <h3 class="edit-title">Éléments de Module</h3>
+                      <div formArrayName="modules" class="modules-array">
+                        <div *ngFor="let emGroup of modulesFormArray.controls; let i = index" [formGroupName]="i" class="module-item">
+                          <div class="form-grid">
+                            <div class="form-field">
+                              <label for="codeEM{{i}}">Code EM</label>
+                              <input type="text" id="codeEM{{i}}" formControlName="codeEM" class="form-input" placeholder="Code EM" />
+                            </div>
+                            <div class="form-field">
+                              <label for="intituleEM{{i}}">Intitulé</label>
+                              <input type="text" id="intituleEM{{i}}" formControlName="intitule" class="form-input" placeholder="Intitulé" />
+                            </div>
+                            <div class="form-field">
+                              <label for="semestre{{i}}">Semestre</label>
+                              <input type="number" id="semestre{{i}}" formControlName="semestre" class="form-input" />
+                            </div>
+                            <div class="form-field">
+                              <label for="credits{{i}}">Crédits</label>
+                              <input type="number" id="credits{{i}}" formControlName="nombreCredits" class="form-input" />
+                            </div>
+                            <div class="form-field">
+                              <label for="heuresCM{{i}}">Heures CM</label>
+                              <input type="number" id="heuresCM{{i}}" formControlName="heuresCM" class="form-input" />
+                            </div>
+                            <div class="form-field">
+                              <label for="heuresTD{{i}}">Heures TD</label>
+                              <input type="number" id="heuresTD{{i}}" formControlName="heuresTD" class="form-input" />
+                            </div>
+                            <div class="form-field">
+                              <label for="heuresTP{{i}}">Heures TP</label>
+                              <input type="number" id="heuresTP{{i}}" formControlName="heuresTP" class="form-input" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-actions">
+                      <button type="button" class="btn-primary" (click)="onSaveEdit()">
+                        <span class="material-icons">save</span>
+                        <span>Enregistrer</span>
+                      </button>
+                      <button type="button" class="btn-secondary" (click)="editingProgrammeId = null">
+                        <span class="material-icons">cancel</span>
+                        <span>Annuler</span>
+                      </button>
+                    </div>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Confirmation Dialog -->
+  <div class="confirm-dialog" *ngIf="showConfirmDialog">
+    <div class="dialog-content">
+      <h3>Confirmation</h3>
+      <p>{{ confirmMessage }}</p>
+      <div class="dialog-actions">
+        <button class="btn-secondary" (click)="cancelDelete()">Annuler</button>
+        <button class="btn-danger" (click)="confirmDelete()">Supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>

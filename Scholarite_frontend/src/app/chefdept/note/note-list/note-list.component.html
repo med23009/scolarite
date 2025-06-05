@@ -1,0 +1,177 @@
+<div class="notes-list-container">
+    <!-- Card header -->
+    
+    
+    <!-- Header with filters -->
+    <section class="filters-section">
+      <div class="filters-row">
+        <!-- Search field -->
+        <div class="filter-group search-group">
+          <div class="search-input-wrapper">
+            <span class="search-icon">
+              <i class="material-icons">search</i>
+            </span>
+            <input
+              id="searchInput"
+              type="text"
+              class="search-input"
+              [(ngModel)]="searchTerm"
+              (keyup)="onSearch()"
+              placeholder="Matricule, nom ou module..." />
+          </div>
+        </div>
+        
+        <!-- Module filter -->
+        <div class="filter-group module-group">
+          <select
+            id="moduleFilter"
+            class="module-select"
+            [(ngModel)]="selectedModule"
+            (change)="onModuleChange()">
+            <option value="">Tous les modules</option>
+            <option *ngFor="let module of elementModules" [value]="module.codeEM">
+              {{ module.codeEM }} - {{ module.intitule }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Loading state -->
+    <section class="loading-state" *ngIf="loading">
+      <div class="loading-spinner"></div>
+    </section>
+    
+    <!-- Notes table -->
+    <section class="notes-table-section" *ngIf="!loading && filteredNotes.length > 0">
+      <div class="table-container">
+        <table class="notes-table">
+          <thead>
+            <tr>
+              <th class="column-matricule">Matricule</th>
+              <th class="column-name">Nom & Prénom</th>
+              <th class="column-module">Module</th>
+              <th class="column-devoir">Devoir (40%)</th>
+              <th class="column-examen">Examen (60%)</th>
+              <th class="column-rattrapage">Rattrapage</th>
+              <th class="column-total">Total</th>
+              <th class="column-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let note of paginatedNotes">
+              <td>
+                <strong>{{ note.etudiant?.matricule || note.matriculeEtudiant }}</strong>
+              </td>
+              <td class="student-name">
+                <span *ngIf="hasStudentInfo(note)">
+                  {{ getStudentFullName(note) }}
+                </span>
+                <span *ngIf="!hasStudentInfo(note)" class="student-not-found">
+                  Étudiant non trouvé
+                </span>
+              </td>
+              <td>
+                <span class="module-badge">
+                  {{ note.elementModule?.codeEM }}
+                </span>
+              </td>
+              <td class="text-center">
+                <span class="score-value">{{ note.noteDevoir || '-' }}</span>
+              </td>
+              <td class="text-center">
+                <span class="score-value">{{ note.noteExamen || '-' }}</span>
+              </td>
+              <td class="text-center">
+                <span class="score-value">{{ note.noteRattrapage || '-' }}</span>
+              </td>
+              <td class="text-center">
+                <span [ngClass]="{'score-passing': calculateTotal(note) >= 10, 'score-failing': calculateTotal(note) < 10}">
+                  {{ calculateTotal(note) }}
+                </span>
+              </td>
+              <td class="text-center">
+                <button
+                  class="edit-button"
+                  (click)="editNote(note)"
+                  title="Modifier cette note">
+                  <i class="material-icons">edit</i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    
+    <!-- Pagination -->
+    <section class="pagination-section" *ngIf="!loading && filteredNotes.length > 0">
+      <div class="pagination-container">
+        <div class="module-navigation" *ngIf="!selectedModule">
+          <button 
+            class="module-nav-button" 
+            [disabled]="currentModuleIndex === 0"
+            (click)="changeModule('prev')">
+            <i class="material-icons">arrow_back</i>
+            Module précédent
+          </button>
+        </div>
+
+        <div class="page-navigation">
+          <button 
+            class="pagination-button" 
+            [disabled]="currentPage === 1"
+            (click)="changePage(currentPage - 1)">
+            <i class="material-icons">chevron_left</i>
+          </button>
+          
+          <div class="page-numbers">
+            <button 
+              *ngFor="let page of getPageNumbers()"
+              class="page-number"
+              [class.active]="page === currentPage"
+              (click)="changePage(page)">
+              {{ page }}
+            </button>
+          </div>
+
+          <button 
+            class="pagination-button" 
+            [disabled]="currentPage === totalPages"
+            (click)="changePage(currentPage + 1)">
+            <i class="material-icons">chevron_right</i>
+          </button>
+        </div>
+
+        <div class="module-navigation" *ngIf="!selectedModule">
+          <button 
+            class="module-nav-button" 
+            [disabled]="currentModuleIndex === modulesWithNotes.length - 1"
+            (click)="changeModule('next')">
+            Module suivant
+            <i class="material-icons">arrow_forward</i>
+          </button>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Empty state -->
+    <section class="empty-state-section" *ngIf="!loading && filteredNotes.length === 0">
+      <div class="empty-state">
+        <i class="material-icons empty-icon">assignment</i>
+        <h4 class="empty-title">Aucune note trouvée</h4>
+        <p class="empty-message" *ngIf="searchTerm || selectedModule">
+          Aucun résultat ne correspond à vos critères de recherche.
+        </p>
+        <p class="empty-message" *ngIf="!searchTerm && !selectedModule">
+          Aucune note n'est disponible pour le moment.
+        </p>
+        <div class="empty-action" *ngIf="searchTerm || selectedModule">
+          <button class="edit-button" (click)="searchTerm = ''; selectedModule = ''; applyFilter()">
+            <i class="material-icons">refresh</i> Réinitialiser les filtres
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+  

@@ -1,0 +1,256 @@
+<div class="notes-container">
+  <!-- Alerts -->
+  <div class="alerts">
+    <div *ngIf="errorMessage" class="alert alert-error">
+      <span class="material-icons">error</span>
+      <span>{{ errorMessage }}</span>
+      <button type="button" class="close-button" (click)="errorMessage = null">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div *ngIf="successMessage" class="alert alert-success">
+      <span class="material-icons">check_circle</span>
+      <span>{{ successMessage }}</span>
+      <button type="button" class="close-button" (click)="successMessage = null">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Selection Form -->
+  <section class="card">
+    <div class="card-content">
+      
+      
+      <form [formGroup]="noteManagementForm" class="selection-form">
+        <!-- Optimized Selection Layout -->
+        <div class="selection-container">
+          <!-- Filter Type Selection -->
+          <div class="filter-type-section">
+            <label class="filter-label">Filtrer par :</label>
+            <div class="filter-options">
+              <label class="filter-option" [class.active]="noteManagementForm.get('filterType')?.value === 'department'">
+                <input type="radio" formControlName="filterType" value="department" class="visually-hidden-input">
+                <span class="option-text">Département</span>
+              </label>
+              <label class="filter-option" [class.active]="noteManagementForm.get('filterType')?.value === 'pole'">
+                <input type="radio" formControlName="filterType" value="pole" class="visually-hidden-input">
+                <span class="option-text">Pôle</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Department Selection -->
+          <div class="selection-field" *ngIf="noteManagementForm.get('filterType')?.value === 'department'">
+            <label for="departmentSelect">Département</label>
+            <div *ngIf="isLoadingDepartments" class="loading-indicator">
+              <div class="spinner small"></div>
+              <span>Chargement...</span>
+            </div>
+            <select 
+              id="departmentSelect" 
+              formControlName="department" 
+              class="select-control"
+              [ngClass]="{'invalid': noteManagementForm.get('department')?.invalid && noteManagementForm.get('department')?.touched}">
+              <option [ngValue]="null" disabled>Sélectionner un département</option>
+              <option *ngFor="let dept of departments$ | async" [value]="dept.idDep">{{ dept.intitule }}</option>
+            </select>
+            <div *ngIf="noteManagementForm.get('department')?.invalid && noteManagementForm.get('department')?.touched" class="error-message">
+              Veuillez sélectionner un département.
+            </div>
+          </div>
+
+          <!-- Pole Selection -->
+          <div class="selection-field" *ngIf="noteManagementForm.get('filterType')?.value === 'pole'">
+            <label for="poleSelect">Pôle</label>
+            <div *ngIf="isLoadingPoles" class="loading-indicator">
+              <div class="spinner small"></div>
+              <span>Chargement...</span>
+            </div>
+            <select 
+              id="poleSelect" 
+              formControlName="pole" 
+              class="select-control"
+              [ngClass]="{'invalid': noteManagementForm.get('pole')?.invalid && noteManagementForm.get('pole')?.touched}">
+              <option [ngValue]="null" disabled>Sélectionner un pôle</option>
+              <option *ngFor="let p of poles$ | async" [value]="p.idPole">{{ p.intitule }}</option>
+            </select>
+            <div *ngIf="noteManagementForm.get('pole')?.invalid && noteManagementForm.get('pole')?.touched" class="error-message">
+              Veuillez sélectionner un pôle.
+            </div>
+          </div>
+
+          <!-- Element de Module Selection -->
+          <div class="selection-field" *ngIf="(noteManagementForm.get('department')?.value || noteManagementForm.get('pole')?.value) && !isLoadingElementModules">
+            <label for="elementModuleSelect">Élément de Module</label>
+            <select 
+              id="elementModuleSelect" 
+              formControlName="elementModule" 
+              class="select-control"
+              [ngClass]="{'invalid': noteManagementForm.get('elementModule')?.invalid && noteManagementForm.get('elementModule')?.touched}">
+              <option [ngValue]="null" disabled>Sélectionner un élément de module</option>
+              <option *ngFor="let em of elementModules" [value]="em.codeEM">{{ em.intitule }} ({{ em.codeEM }})</option>
+            </select>
+            <div *ngIf="noteManagementForm.get('elementModule')?.invalid && noteManagementForm.get('elementModule')?.touched" class="error-message">
+              Veuillez sélectionner un élément de module.
+            </div>
+            <div *ngIf="(noteManagementForm.get('department')?.value || noteManagementForm.get('pole')?.value) && elementModules.length === 0 && !isLoadingElementModules && !noteManagementForm.get('elementModule')?.value" class="info-message">
+              Aucun élément de module trouvé pour la sélection actuelle.
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="isLoadingElementModules" class="loading-indicator">
+          <div class="spinner small"></div>
+          <span>Chargement des éléments de module...</span>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Notes Table -->
+  <section class="card" *ngIf="selectedElementModuleCode && (notes$ | async) as notesList">
+    <div class="card-content">
+      <h2 class="section-title" *ngIf="notesList.length > 0">Notes pour l'Élément de Module : {{ selectedElementModuleCode }}</h2>
+      
+      <!-- Loading State -->
+      <div *ngIf="isLoadingNotes" class="loading-container">
+        <div class="spinner large"></div>
+        <p>Chargement des notes...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoadingNotes && notesList.length === 0 && selectedElementModuleCode" class="empty-state">
+        <span class="material-icons">assignment</span>
+        <p>Aucune note trouvée pour l'élément de module {{ selectedElementModuleCode }}.</p>
+      </div>
+
+      <!-- Table -->
+      <div *ngIf="!isLoadingNotes && notesList.length > 0" class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Matricule</th>
+              <th>Nom</th>
+              <th>Prénom</th>
+              <th>Note Devoir</th>
+              <th>Note Examen</th>
+              <th>Note Rattrapage</th>
+              <th>Note Générale</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let note of notesList">
+              <td>{{ note.etudiant?.matricule }}</td>
+              <td>{{ note.etudiant?.nom }}</td>
+              <td>{{ note.etudiant?.prenom }}</td>
+              <td>{{ note.noteDevoir !== null && note.noteDevoir !== undefined ? note.noteDevoir : '-' }}</td>
+              <td>{{ note.noteExamen !== null && note.noteExamen !== undefined ? note.noteExamen : '-' }}</td>
+              <td>{{ note.noteRattrapage !== null && note.noteRattrapage !== undefined ? note.noteRattrapage : '-' }}</td>
+              <td>
+                <span [ngClass]="{'score-passing': note.noteGenerale !== null && note.noteGenerale !== undefined && note.noteGenerale >= 10, 'score-failing': note.noteGenerale !== null && note.noteGenerale !== undefined && note.noteGenerale < 10}">
+                  {{ note.noteGenerale !== null && note.noteGenerale !== undefined ? note.noteGenerale : '-' }}
+                </span>
+              </td>
+              <td class="actions-cell">
+                <button class="btn-icon btn-edit" (click)="openEditModal(note)" title="Modifier la note">
+                  <span class="material-icons">edit</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Info Messages -->
+  <div *ngIf="noteManagementForm.get('elementModule')?.value && !(notes$ | async) && !isLoadingNotes && !selectedElementModuleCode" class="alert alert-warning">
+    Les notes pour {{ noteManagementForm.get('elementModule')?.value }} sont en cours de chargement ou aucune note n'est disponible.
+  </div>
+  <div *ngIf="!noteManagementForm.get('elementModule')?.value && (noteManagementForm.get('department')?.value || noteManagementForm.get('pole')?.value) && !isLoadingElementModules && elementModules.length > 0" class="alert alert-info">
+    Veuillez sélectionner un élément de module pour voir ou importer les notes.
+  </div>
+
+  <!-- Edit Note Modal -->
+  <div class="modal-overlay" *ngIf="editingNote">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          Modifier la Note de {{ editingNote.etudiant?.nom }} {{ editingNote.etudiant?.prenom }} 
+          ({{ editingNote.etudiant?.matricule }}) pour EM: {{ editingNote.elementModule?.codeEM }}
+        </h3>
+        <button type="button" class="modal-close" (click)="cancelEdit()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <form [formGroup]="editForm">
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="editNoteDevoir">Note Devoir</label>
+              <input 
+                type="number" 
+                id="editNoteDevoir" 
+                formControlName="noteDevoir" 
+                class="form-input" 
+                min="0" 
+                max="20" 
+                step="0.25">
+              <div *ngIf="editForm.get('noteDevoir')?.invalid && (editForm.get('noteDevoir')?.dirty || editForm.get('noteDevoir')?.touched)" class="error-message">
+                La note de devoir doit être entre 0 et 20.
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label for="editNoteExamen">Note Examen</label>
+              <input 
+                type="number" 
+                id="editNoteExamen" 
+                formControlName="noteExamen" 
+                class="form-input" 
+                min="0" 
+                max="20" 
+                step="0.25">
+              <div *ngIf="editForm.get('noteExamen')?.invalid && (editForm.get('noteExamen')?.dirty || editForm.get('noteExamen')?.touched)" class="error-message">
+                La note d'examen doit être entre 0 et 20.
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label for="editNoteRattrapage">Note Rattrapage</label>
+              <input 
+                type="number" 
+                id="editNoteRattrapage" 
+                formControlName="noteRattrapage" 
+                class="form-input" 
+                min="0" 
+                max="20" 
+                step="0.25">
+              <div *ngIf="editForm.get('noteRattrapage')?.invalid && (editForm.get('noteRattrapage')?.dirty || editForm.get('noteRattrapage')?.touched)" class="error-message">
+                La note de rattrapage doit être entre 0 et 20.
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="cancelEdit()">Annuler</button>
+        <button 
+          type="button" 
+          class="btn-primary" 
+          (click)="submitEdit()" 
+          [disabled]="editForm.invalid || isUpdating">
+          <span *ngIf="!isUpdating">Sauvegarder</span>
+          <span *ngIf="isUpdating" class="loading-text">
+            <div class="spinner small"></div>
+            <span>Sauvegarde...</span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

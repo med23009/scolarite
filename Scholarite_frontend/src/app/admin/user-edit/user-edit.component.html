@@ -1,0 +1,176 @@
+<div class="user-edit-container">
+  <header class="header">
+    <h1 class="title">
+      <span class="material-icons">{{ isAddMode ? 'person_add' : 'edit_person' }}</span>
+      {{ isAddMode ? 'Ajouter un utilisateur' : 'Modifier un utilisateur' }}
+    </h1>
+  </header>
+  
+  <nav class="nav-tabs">
+    <a class="tab" [ngClass]="{'active': isAddMode}" routerLink="/admin/users/new">
+      <span class="material-icons">person_add</span>
+      <span>Créer Utilisateur</span>
+    </a>
+    <a class="tab" [ngClass]="{'active': !isAddMode}" routerLink="/admin/users">
+      <span class="material-icons">people</span>
+      <span>Liste des Utilisateurs</span>
+    </a>
+  </nav>
+
+  <!-- Alerts -->
+  <div class="alerts" *ngIf="error">
+    <div class="alert alert-error">
+      <span class="material-icons">error</span>
+      <span>{{ error }}</span>
+    </div>
+  </div>
+
+  <!-- Form Section -->
+  <section class="card">
+    <div class="card-content">
+      <h2 class="section-title">{{ isAddMode ? 'Nouveau compte utilisateur' : 'Modifier les informations' }}</h2>
+
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-container">
+        <div class="spinner large"></div>
+        <p>Chargement...</p>
+      </div>
+
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()" *ngIf="!loading" autocomplete="off">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="role">
+              Rôle<span class="required">*</span>
+            </label>
+            <select 
+              id="role" 
+              formControlName="role"
+              (change)="onRoleChange()"
+              [ngClass]="{'invalid': submitted && f['role'].errors}">
+              <option value="0">Administrateur (ADMIN)</option>
+              <option value="1">Chef de Département (CHEF_DEPT)</option>
+              <option value="2">Chef de Pôle (CHEF_POLE)</option>
+              <option value="3">Directeur d'Enseignement (DE)</option>
+              <option value="4">Responsable de Scolarité (RS)</option>
+            </select>
+            <div class="error-message" *ngIf="submitted && f['role'].errors?.['required']">
+              Rôle est obligatoire
+            </div>
+          </div>
+          
+          <!-- Champ département qui apparaît uniquement pour les chefs de département -->
+          <div class="form-field" *ngIf="isChefDepartement()">
+            <label for="departement">
+              Département<span class="required">*</span>
+            </label>
+            <select 
+              id="departement" 
+              formControlName="departement"
+              [ngClass]="{'invalid': submitted && f['departement'].errors}">
+              <option [value]="null">-- Sélectionner un département --</option>
+              <option *ngFor="let dep of departements" [value]="dep.idDep">
+                {{ dep.codeDep }} - {{ dep.intitule }}
+              </option>
+            </select>
+            <div class="error-message" *ngIf="submitted && f['departement'].errors?.['required']">
+              Département est obligatoire
+            </div>
+          </div>
+          
+          <!-- Champ pôle qui apparaît uniquement pour les chefs de pôle -->
+          <div class="form-field" *ngIf="isChefPole()">
+            <label for="pole">
+              Pôle<span class="required">*</span>
+            </label>
+            <select 
+              id="pole" 
+              formControlName="pole"
+              [ngClass]="{'invalid': submitted && f['pole'].errors}">
+              <option [value]="null">-- Sélectionner un pôle --</option>
+              <option *ngFor="let p of poles" [value]="p.idPole">
+                {{ p.codePole }} - {{ p.intitule }}
+              </option>
+            </select>
+            <div class="error-message" *ngIf="submitted && f['pole'].errors?.['required']">
+              Pôle est obligatoire
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="nom">
+              Nom<span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="nom" 
+              formControlName="nom" 
+              placeholder="Ex: Dupont"
+              [ngClass]="{'invalid': submitted && f['nom'].errors}">
+            <div class="error-message" *ngIf="submitted && f['nom'].errors?.['required']">
+              Nom est obligatoire
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="prenom">
+              Prénom<span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="prenom" 
+              formControlName="prenom" 
+              placeholder="Ex: Jean"
+              [ngClass]="{'invalid': submitted && f['prenom'].errors}">
+            <div class="error-message" *ngIf="submitted && f['prenom'].errors?.['required']">
+              Prénom est obligatoire
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="email">
+              E-mail<span class="required">*</span>
+            </label>
+            <input 
+              type="email" 
+              id="email" 
+              formControlName="email" 
+              placeholder=" "
+              [ngClass]="{'invalid': submitted && f['email'].errors}">
+            <div class="error-message" *ngIf="submitted && f['email'].errors?.['required']">
+              Email est obligatoire
+            </div>
+            <div class="error-message" *ngIf="submitted && f['email'].errors?.['email']">
+              Format d'email invalide
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="password">
+              {{ isAddMode ? 'Mot de passe' : 'Mot de passe (laisser vide pour ne pas modifier)' }}
+              <span class="required" *ngIf="isAddMode">*</span>
+            </label>
+            <input 
+              type="password" 
+              id="password" 
+              formControlName="password"
+              [ngClass]="{'invalid': submitted && f['password'].errors}">
+            <div class="error-message" *ngIf="submitted && f['password'].errors?.['required']">
+              Mot de passe est obligatoire
+            </div>
+            <div class="error-message" *ngIf="submitted && f['password'].errors?.['minlength']">
+              Minimum 6 caractères requis
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="loading">
+            <span *ngIf="loading" class="spinner"></span>
+            <span class="material-icons">{{ isAddMode ? 'save' : 'update' }}</span>
+            <span>{{ isAddMode ? 'Enregistrer' : 'Mettre à jour' }}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+</div>

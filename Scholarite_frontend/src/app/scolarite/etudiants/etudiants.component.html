@@ -1,0 +1,317 @@
+<div class="etudiant-container">
+  <header class="header">
+    <h1 class="title">Gestion des étudiants</h1>
+    <button *ngIf="!showForm" class="btn-primary" (click)="showAddEtudiantForm()">
+      <span class="material-icons">add</span>
+      <span>Nouvel étudiant</span>
+    </button>
+  </header>
+
+  <!-- Alerts -->
+  <div class="alerts">
+    <div *ngIf="error" class="alert alert-error">
+      <span class="material-icons">error</span>
+      <span>{{ error }}</span>
+      <button class="btn-close" (click)="error = ''">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div *ngIf="success" class="alert alert-success">
+      <span class="material-icons">check_circle</span>
+      <span>{{ success }}</span>
+      <button class="btn-close" (click)="success = ''">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Form Section -->
+  <section class="card" *ngIf="showForm">
+    <div class="card-content">
+      <div class="card-header">
+        <h2 class="section-title">{{ editMode ? 'Modifier l\'étudiant' : 'Ajouter un étudiant' }}</h2>
+        <button type="button" class="btn-icon" (click)="cancelForm()" title="Fermer">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <form [formGroup]="etudiantForm" (ngSubmit)="submitEtudiantForm()">
+        <div class="form-grid">
+          <!-- Informations personnelles -->
+          <div class="form-section-title">Informations personnelles</div>
+          
+          <div class="form-field">
+            <label for="matricule">Matricule<span class="required">*</span></label>
+            <input 
+              type="text" 
+              id="matricule" 
+              formControlName="matricule"
+              [ngClass]="{ 'invalid': submitted && f['matricule'].errors }">
+            <div *ngIf="submitted && f['matricule'].errors" class="error-message">
+              Le matricule est obligatoire
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="nom">Nom<span class="required">*</span></label>
+            <input 
+              type="text" 
+              id="nom" 
+              formControlName="nom"
+              [ngClass]="{ 'invalid': submitted && f['nom'].errors }">
+            <div *ngIf="submitted && f['nom'].errors" class="error-message">
+              Le nom est obligatoire
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="prenom">Prénom<span class="required">*</span></label>
+            <input 
+              type="text" 
+              id="prenom" 
+              formControlName="prenom"
+              [ngClass]="{ 'invalid': submitted && f['prenom'].errors }">
+            <div *ngIf="submitted && f['prenom'].errors" class="error-message">
+              Le prénom est obligatoire
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="sexe">Sexe</label>
+            <select id="sexe" formControlName="sexe">
+              <option value="">-- Sélectionner --</option>
+              <option value="M">Masculin</option>
+              <option value="F">Féminin</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="dateNaissance">Date de naissance</label>
+            <input 
+              type="date" 
+              id="dateNaissance" 
+              formControlName="dateNaissance">
+          </div>
+
+          <div class="form-field">
+            <label for="lieuNaissance">Lieu de naissance</label>
+            <input 
+              type="text" 
+              id="lieuNaissance" 
+              formControlName="lieuNaissance">
+          </div>
+
+          <!-- Coordonnées -->
+          <div class="form-section-title">Coordonnées</div>
+          
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input 
+              type="email" 
+              id="email" 
+              formControlName="email"
+              [ngClass]="{ 'invalid': submitted && f['email'].errors }">
+            <div *ngIf="submitted && f['email'].errors" class="error-message">
+              Email invalide
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="telephoneEtudiant">Téléphone étudiant</label>
+            <input 
+              type="tel" 
+              id="telephoneEtudiant" 
+              formControlName="telephoneEtudiant">
+          </div>
+
+          <div class="form-field">
+            <label for="telephoneCorrespondant">Téléphone correspondant</label>
+            <input 
+              type="tel" 
+              id="telephoneCorrespondant" 
+              formControlName="telephoneCorrespondant">
+          </div>
+
+          <!-- Informations académiques -->
+          <div class="form-section-title">Informations académiques</div>
+          
+          <div class="form-field">
+            <label for="departement">Département</label>
+            <select id="departement" formControlName="departement">
+              <option value="">-- Sélectionner un département --</option>
+              <option *ngFor="let dept of departements" [value]="dept.idDep">
+                {{ dept.codeDep }} - {{ dept.intitule }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="promotion">Promotion</label>
+            <select 
+              id="promotion" 
+              formControlName="promotion">
+              <option value="">-- Sélectionner une promotion --</option>
+              <option *ngFor="let promotion of availablePromotions" [value]="promotion">
+                {{ promotion }}
+              </option>
+              <option *ngIf="!availablePromotions.includes(etudiantForm.value.promotion) && etudiantForm.value.promotion" [value]="etudiantForm.value.promotion">
+                {{ etudiantForm.value.promotion }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="anneeObtentionBac">Année du Bac</label>
+            <input 
+              type="number" 
+              id="anneeObtentionBac" 
+              formControlName="anneeObtentionBac">
+          </div>
+
+          <div class="form-field">
+            <label for="dateInscription">Date d'inscription</label>
+            <input 
+              type="date" 
+              id="dateInscription" 
+              formControlName="dateInscription">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="loading">
+            <span *ngIf="loading" class="spinner"></span>
+            <span class="material-icons">{{ editMode ? 'update' : 'save' }}</span>
+            <span>{{ editMode ? 'Mettre à jour' : 'Enregistrer' }}</span>
+          </button>
+          <button type="button" class="btn-secondary" (click)="cancelForm()">
+            <span class="material-icons">cancel</span>
+            <span>Annuler</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Main Content when not showing form -->
+  <div *ngIf="!showForm" class="main-content">
+    <!-- Compact Search and Filter Section -->
+    <div class="compact-controls">
+      <div class="search-filter-section">
+        <div class="search-input">
+          <span class="material-icons">search</span>
+          <input 
+            type="text" 
+            placeholder="Rechercher..." 
+            [(ngModel)]="searchTerm" 
+            (input)="applyFilter()">
+        </div>
+        <div class="filter-selects">
+          <select [(ngModel)]="selectedDepartementId" (change)="applyFilter()" aria-label="Filtrer par département">
+            <option value="">Tous les départements</option>
+            <option *ngFor="let dep of departements" [value]="dep.idDep">
+              {{ dep.intitule }}
+            </option>
+          </select>
+          <select [(ngModel)]="selectedPromotion" (change)="applyFilter()" aria-label="Filtrer par promotion">
+            <option value="">Toutes les promotions</option>
+            <option *ngFor="let promotion of availablePromotions" [value]="promotion">
+              {{ promotion }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Import CSV Compact Section -->
+      <div class="import-section">
+        <div class="import-header">
+          <span class="material-icons">upload_file</span>
+          <span>Importer</span>
+        </div>
+        <div class="import-controls">
+          <input 
+            type="text" 
+            placeholder="Promotion (ex: 2023-2024)" 
+            [(ngModel)]="importPromotion"
+            class="promotion-input">
+          <div class="file-input-wrapper">
+            <input type="file" id="csvFile" (change)="onFileSelected($event)" accept=".csv">
+            <label for="csvFile" class="file-label">
+              <span>{{ selectedFile ? selectedFile.name : 'CSV' }}</span>
+            </label>
+          </div>
+          <button 
+            class="btn-success compact" 
+            [disabled]="!selectedFile || importInProgress || !importPromotion"
+            (click)="importCSV()">
+            <span *ngIf="importInProgress" class="spinner"></span>
+            <span class="material-icons">{{ importInProgress ? 'hourglass_top' : 'upload' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Students List Section -->
+    <section class="card">
+      <div class="card-content">
+        <div class="list-header">
+          <h2 class="section-title">Liste des étudiants</h2>
+          <span class="badge badge-primary">{{ filteredEtudiants.length }} étudiant(s)</span>
+        </div>
+        
+        <!-- Loading State -->
+        <div *ngIf="loading" class="loading-container">
+          <div class="spinner large"></div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!loading && filteredEtudiants.length === 0" class="empty-state">
+          <span class="material-icons">school</span>
+          <p>Aucun étudiant trouvé</p>
+          <div class="hint" *ngIf="searchTerm || selectedDepartementId || selectedPromotion">
+            Modifiez votre recherche ou vos filtres
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div *ngIf="!loading && filteredEtudiants.length > 0" class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Matricule</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Email</th>
+                <th>Département</th>
+                <th>Promotion</th>
+                <th class="actions-header">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let etudiant of filteredEtudiants">
+                <td><span class="matricule-badge">{{ etudiant.matricule }}</span></td>
+                <td>{{ etudiant.nom }}</td>
+                <td>{{ etudiant.prenom }}</td>
+                <td>{{ etudiant.email || 'Non renseigné' }}</td>
+                <td>{{ etudiant.departement?.codeDep || 'Non assigné' }}</td>
+                <td>{{ etudiant.promotion || 'Non renseigné' }}</td>
+                <td class="actions-cell">
+                  <div class="actions-group">
+                    <button class="btn-icon btn-edit" (click)="editEtudiant(etudiant)" title="Modifier">
+                      <span class="material-icons">edit</span>
+                    </button>
+                    <button class="btn-icon btn-pdf" (click)="exportAttestation(etudiant)" title="Attestation PDF">
+                      <span class="material-icons">picture_as_pdf</span>
+                    </button>
+                    <button class="btn-icon btn-delete" (click)="deleteEtudiant(etudiant.idEtudiant!)" title="Supprimer">
+                      <span class="material-icons">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

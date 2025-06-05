@@ -1,0 +1,45 @@
+<!-- src/app/chefdept/note/note.component.html -->
+<div class="card">
+  <div class="card-header">
+    <h1>Gestion des Notes</h1>
+    <button class="btn btn-primary" (click)="toggleImportForm()">
+      <i class="material-icons">{{ showImportForm ? 'close' : 'add' }}</i>
+      {{ showImportForm ? 'Fermer' : 'Importer des notes' }}
+    </button>
+  </div>
+
+  <!-- Alertes -->
+  <div *ngIf="error" class="alert alert-danger">
+    <i class="material-icons">error</i> {{ error }}
+  </div>
+  <div *ngIf="success" class="alert alert-success">
+    <i class="material-icons">check_circle</i> {{ success }}
+  </div>
+
+  <div class="card-body">
+    <!-- Section d'importation -->
+    <app-note-import 
+      *ngIf="showImportForm" 
+      [semestres]="semestres"
+      [elementModules]="elementModules"
+      (importSuccess)="handleImportSuccess($event)"
+      (importError)="handleImportError($event)"
+      (closeImport)="handleCloseImport()">
+    </app-note-import>
+
+    <!-- Formulaire de modification de note -->
+    <app-note-edit 
+      *ngIf="isEditing && selectedNoteForEdit" 
+      [note]="selectedNoteForEdit" 
+      (saveEvent)="handleSaveNote($event)"
+      (cancelEvent)="handleCancelEdit()">
+    </app-note-edit>
+
+    <!-- Liste des notes -->
+    <app-note-list
+      [notes]="notes"
+      [elementModules]="elementModules" 
+      (editNoteEvent)="handleEditNoteEvent($event)">
+    </app-note-list>
+  </div>
+</div>

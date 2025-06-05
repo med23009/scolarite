@@ -1,0 +1,171 @@
+<div class="pole-container">
+  <header class="header">
+    <h1 class="title">Gestion des pôles</h1>
+    <button *ngIf="!showForm" class="btn-primary" (click)="showAddPoleForm()">
+      <span class="material-icons">add</span>
+      <span>Nouveau pôle</span>
+    </button>
+  </header>
+
+  <!-- Alerts -->
+  <div class="alerts">
+    <div *ngIf="error" class="alert alert-error">
+      <span class="material-icons">error</span>
+      <span>{{ error }}</span>
+    </div>
+    <div *ngIf="success" class="alert alert-success">
+      <span class="material-icons">check_circle</span>
+      <span>{{ success }}</span>
+    </div>
+  </div>
+
+  <!-- Form Section -->
+  <section class="card" *ngIf="showForm">
+    <div class="card-content">
+      <h2 class="section-title">{{ editMode ? 'Modifier le pôle' : 'Ajouter un pôle' }}</h2>
+
+      <form [formGroup]="poleForm" (ngSubmit)="submitPoleForm()">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="codePole">Code<span class="required">*</span></label>
+            <input
+              type="text"
+              id="codePole"
+              formControlName="codePole"
+              [ngClass]="{ 'invalid': submitted && f['codePole'].errors }">
+            <div *ngIf="submitted && f['codePole'].errors" class="error-message">
+              Le code est obligatoire
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="intitule">Intitulé<span class="required">*</span></label>
+            <input
+              type="text"
+              id="intitule"
+              formControlName="intitule"
+              [ngClass]="{ 'invalid': submitted && f['intitule'].errors }">
+            <div *ngIf="submitted && f['intitule'].errors" class="error-message">
+              L'intitulé est requis
+            </div>
+          </div>
+
+          <div class="form-field full-width">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              formControlName="description"
+              rows="3"></textarea>
+          </div>
+
+          <div class="form-field">
+            <label for="nom_responsable">Nom du responsable (manuel)</label>
+            <input
+              type="text"
+              id="nom_responsable"
+              formControlName="nom_responsable">
+          </div>
+
+          <div class="form-field">
+            <label for="responsable">Sélectionner un responsable</label>
+            <select id="responsable" formControlName="responsable">
+              <option [value]="null">-- Aucun --</option>
+              <option *ngFor="let user of users" [value]="user.idMembre">
+                {{ getUserFullName(user) }} ({{ user.email }})
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="loading">
+            <span *ngIf="loading" class="spinner"></span>
+            <span>{{ editMode ? 'Mettre à jour' : 'Enregistrer' }}</span>
+          </button>
+          <button type="button" class="btn-secondary" (click)="cancelForm()">
+            <span>Annuler</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Main Content when not showing form -->
+  <div *ngIf="!showForm" class="main-content">
+    <!-- Import CSV Section -->
+    <section class="card import-section">
+      <div class="card-content">
+        <h2 class="section-title">Importer des pôles</h2>
+        <div class="import-controls">
+          <div class="file-input-wrapper">
+            <input type="file" id="csv-file" (change)="onFileSelected($event)" accept=".csv">
+            <label for="csv-file" class="file-label">
+              <span class="material-icons">upload_file</span>
+              <span>{{ selectedFile ? selectedFile.name : 'Choisir un fichier CSV' }}</span>
+            </label>
+          </div>
+          <button
+            class="btn-success"
+            [disabled]="!selectedFile || importInProgress"
+            (click)="importPoleCSV()">
+            <span *ngIf="importInProgress" class="spinner"></span>
+            <span>{{ importInProgress ? 'Importation...' : 'Importer' }}</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Poles List Section -->
+    <section class="card">
+      <div class="card-content">
+        <h2 class="section-title">Liste des pôles</h2>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="loading-container">
+          <div class="spinner large"></div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!loading && poles.length === 0" class="empty-state">
+          <span class="material-icons">folder_open</span>
+          <p>Aucun pôle trouvé.</p>
+        </div>
+
+        <!-- Table -->
+        <div *ngIf="!loading && poles.length > 0" class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Intitulé</th>
+                <th>Description</th>
+                <th>Responsable</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let pole of poles">
+                <td><span class="code-badge">{{ pole.codePole }}</span></td>
+                <td>{{ pole.intitule }}</td>
+                <td>{{ pole.description }}</td>
+                <td>
+                  <span *ngIf="pole.responsable">{{ getUserFullName(pole.responsable) }}</span>
+                  <span *ngIf="!pole.responsable && pole.nom_responsable">{{ pole.nom_responsable }}</span>
+                  <span *ngIf="!pole.responsable && !pole.nom_responsable" class="text-muted">Non assigné</span>
+                </td>
+                <td class="actions-cell">
+                  <button class="btn-icon btn-edit" (click)="editPole(pole)" title="Modifier">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button class="btn-icon btn-delete" (click)="deletePole(pole.idPole!)" title="Supprimer">
+                    <span class="material-icons">delete</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,106 @@
+<div class="import-container">
+    
+  
+    <!-- Import Form -->
+    <form [formGroup]="importForm" (ngSubmit)="onImportSubmit()" class="import-form">
+      <!-- Semester Selection -->
+      <section class="form-section">
+        <div class="form-field">
+          <label for="idSemestre" class="field-label">
+            Semestre<span class="required-indicator">*</span>
+          </label>
+          <select 
+            id="idSemestre" 
+            class="field-select" 
+            formControlName="idSemestre" 
+            required 
+            (change)="onSemestreChange()">
+            <option value="">Sélectionnez un semestre</option>
+            <option *ngFor="let sem of semestres" [value]="sem.idSemestre">
+              {{ sem.semestre }} - {{ sem.annee }}
+            </option>
+          </select>
+          <div *ngIf="importForm.get('idSemestre')?.invalid && importForm.get('idSemestre')?.touched" class="field-error">
+            <i class="material-icons error-icon">error</i> Semestre requis
+          </div>
+        </div>
+      </section>
+  
+      <!-- Module Selection -->
+      <section class="form-section">
+        <div class="form-field">
+          <label for="elementModule" class="field-label">
+            Élément de Module<span class="required-indicator">*</span>
+          </label>
+          <select 
+            id="elementModule" 
+            class="field-select" 
+            formControlName="elementModule" 
+            required>
+            <option value="">Sélectionnez un module</option>
+            <option *ngFor="let module of filteredElementModules" [value]="module.idEM">
+              {{ module.codeEM }} - {{ module.intitule }}
+            </option>
+          </select>
+          <div *ngIf="importForm.get('elementModule')?.invalid && importForm.get('elementModule')?.touched" class="field-error">
+            <i class="material-icons error-icon">error</i> Module requis
+          </div>
+          <div *ngIf="filteredElementModules.length === 0 && importForm.get('idSemestre')?.valid" class="field-info">
+            <i class="material-icons info-icon">info</i> Aucun module disponible pour ce semestre
+          </div>
+        </div>
+      </section>
+  
+      <!-- File Upload -->
+      <section class="form-section">
+        <div class="form-field">
+          <label for="noteFile" class="field-label">
+            Fichier Excel des Notes<span class="required-indicator">*</span>
+          </label>
+          <input 
+            type="file" 
+            id="noteFile" 
+            class="field-input file-input" 
+            (change)="onFileSelected($event)" 
+            accept=".xlsx,.xls">
+          
+          <div *ngIf="!selectedFile && formSubmitted" class="field-error">
+            <i class="material-icons error-icon">error</i> Fichier requis
+          </div>
+        </div>
+      </section>
+  
+      <!-- Form Actions -->
+      <section class="form-actions">
+        <button type="submit" class="action-button submit-button" [disabled]="importForm.invalid || !selectedFile || submitting">
+          <span *ngIf="submitting" class="spinner"></span>
+          <i class="material-icons button-icon">upload</i>
+          <span class="button-text">Importer</span>
+        </button>
+        <button type="button" class="action-button reset-button" (click)="resetImportForm()">
+          <i class="material-icons button-icon">refresh</i>
+          <span class="button-text">Réinitialiser</span>
+        </button>
+      </section>
+    </form>
+    
+    <!-- Import Results -->
+    <section *ngIf="importResult" class="results-section">
+      <h4 class="results-title">Résultats de l'importation</h4>
+      
+      <div *ngIf="importResult.importedNotes?.length > 0" class="results-success">
+        <i class="material-icons success-icon">check_circle</i>
+        <span class="success-text">{{ importResult.importedNotes.length }} notes importées avec succès.</span>
+      </div>
+      
+      <div *ngIf="importResult.errors?.length > 0" class="results-errors">
+        <h5 class="errors-title">Erreurs</h5>
+        <ul class="errors-list">
+          <li *ngFor="let error of importResult.errors" class="error-item">
+            <i class="material-icons error-icon">error</i>
+            <span class="error-text">{{ error }}</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </div>

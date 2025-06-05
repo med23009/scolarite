@@ -1,0 +1,95 @@
+matricule,nom,prenom,email,sexe,dateNaissance,telephoneEtudiant,departement,promotion
+23083,BOUK,Mohamedou,23083@esp.mr;,,,,IRT
+23244,Lemine DJEIDJAH,Mohamed,23244@esp.mr;,,,,IRT
+23050,Lemine NIANG,Mohamed,23050@esp.mr;,,,,IRT
+23012,AHMED,Mohamed,23012@esp.mr;,,,,IRT
+23018,EJIWEN,Mariem,23018@esp.mr;,,,,IRT
+23040,Mohamed SABAR,Sidi,23040@esp.mr;,,,,IRT
+23009,DADE,Mohamedou,23009@esp.mr;,,,,IRT
+23064,CHEDDOU,Beba,23064@esp.mr;,,,,IRT
+23059,MAHMOUD ETHMANE,Ethmane,23059@esp.mr;,,,,IRT
+23243,Abd Dayme AHMED BOUHA,Ahmed,23243@esp.mr;,,,,IRT
+23044,BA,Moussa,23044@esp.mr;,,,,IRT
+23043,AHMED SAIDE,Nessiba,23043@esp.mr;,,,,IRT
+23042,SABAR,Salma,23042@esp.mr;,,,,IRT
+23242,MOHAMED SAAD,Ahmed,23242@esp.mr;,,,,IRT
+23104,TALEB,Aichetou,23104@esp.mr;,,,,IRT
+23007,CHEIKH ABDELLAHI,Moustapha,23007@esp.mr;,,,,SID
+23215,Mahmoud YAHYA,Mouhamed,23215@esp.mr;,,,,SID
+23217,DIALLO,Amadou,23217@esp.mr;,,,,SID
+23214,DIALLO,Abou,23214@esp.mr;,,,,SID
+23216,DIALLO,Aliou,23216@esp.mr;,,,,SID
+23231,Moustapha JIDDOU,El,23231@esp.mr;,,,,SID
+23014,Lemine MOHAMED BEYBE,Mohamed,23014@esp.mr;,,,,SID
+23048,Sidi,Mohamed,23048@esp.mr;,,,,SID
+23084,Yahya Yahya,Mohamed,23084@esp.mr;,,,,SID
+23203,BA,Fatimata,23203@esp.mr;,,,,SID
+23029,MOHAMED VALL,Aichetou,23029@esp.mr;,,,,SID
+23054,M'BAREK,Mariem,23054@esp.mr;,,,,SID
+23103,EL KORI,Baba,23103@esp.mr;,,,,SID
+23086,BEDINE,Mohamed,23086@esp.mr;,,,,SID
+23021,SID BRAHIM,Khelihena,23021@esp.mr;,,,,SID
+23093,CHEIKH SIDIYA,Mariem,23093@esp.mr;,,,,SID
+22101,Salem ELKEBIR,Ahmed,22101@esp.mr;,,,,GE
+23260,MOILID,Abdellahi,23260@esp.mr;,,,,GE
+23111,EL VETTA,Abdellahi,23111@esp.mr;,,,,GE
+23038,TALEB MOHAMED,Bouamatou,23038@esp.mr;,,,,GE
+23108,El Mourtedha SIDI EL VALY,Ahmed,23108@esp.mr;,,,,GE
+23257,Houssein THIAM,El,23257@esp.mr;,,,,GE
+23026,Abdallahi CHEIKH ABDALLAHI,Cheikh,23026@esp.mr;,,,,GE
+22049,Mohamed ABD EDDAYEM,Sidi,22049@esp.mr;,,,,GE
+23016,EL MAMI,Mohamed,23016@esp.mr;,,,,GE
+23053,,,23053@esp.mr;,,,,GE
+23068,SIDI EL HADJ,Ahmed,23068@esp.mr;,,,,GE
+23047,Tahir NAVAA,Mohamed,23047@esp.mr;,,,,GE
+23045,MOULAY EL ABBASS,Mohamed,23045@esp.mr;,,,,GE
+23010,Vadel GHALY,Mohamed,23010@esp.mr;,,,,GE
+23218,DIA,Saidou,23218@esp.mr;,,,,GE
+23061,HADRAMY,Eghlana,23061@esp.mr;,,,,GM
+23085,Salem MOHAMED AHMED,Mohamed,23085@esp.mr;,,,,GM
+23071,MOHAMEDOU,Abdellahi,23071@esp.mr;,,,,GM
+23234,BOUK,Mohamed,23234@esp.mr;,,,,GM
+23081,KHLIVA,Nekhteirou,23081@esp.mr;,,,,GM
+23220,El Wely SANGOURA,Cheikh,23220@esp.mr;,,,,GM
+23222,Sy,Alioune,23222@esp.mr;,,,,GM
+23105,ABDEL HAMID,Ahmednah,23105@esp.mr;,,,,GM
+23066,EL BOUKHARY,Aichata,23066@esp.mr;,,,,GM
+22048,Mohamed Nedhir TOLBA,Cheikh,22048@esp.mr;,,,,GM
+23106,MOHAMED,Ahmed,23106@esp.mr;,,,,GM
+23227,YEHYA,Abdalahi,23227@esp.mr;,,,,GM
+23259,THIAM,Harouna,23259@esp.mr;,,,,GM
+23041,Abdellahi AHMED BEZEID,Sidi,23041@esp.mr;,,,,GM
+23023,M'kHAITIR,Elmeselma,23023@esp.mr;,,,,GM
+23046,SIDI BABA,Mohamed,23046@esp.mr;,,,,GM
+23205,SALL,Mamadou,23205@esp.mr;,,,,GM
+23072,BOULKHERE,Abdellahi,23072@esp.mr;,,,,GM
+22063,Vadel SABAR,Mohamed,22063@esp.mr;,,,,GC-HE
+23230,karim Soumare,Abdoul,23230@esp.mr;,,,,GC-HE
+23240,CHEIF,Ethmane,23240@esp.mr;,,,,GC-HE
+23256,Mahmoud SOW,Mouhamedou,23256@esp.mr;,,,,GC-HE
+23094,EBEYITE,Lematt,23094@esp.mr;,,,,GC-HE
+23008,BILAL,Mouloud,23008@esp.mr;,,,,GC-HE
+23100,ATVAGHA,Edah,23100@esp.mr;,,,,GC-HE
+23077,SIDI ABDOULLAH,Sidina,23077@esp.mr;,,,,GC-HE
+23241,HARTANI,Aiche,23241@esp.mr;,,,,GC-HE
+23058,DAHI,Guebel,23058@esp.mr;,,,,GC-HE
+23095,KH'NAVER,Khouloud,23095@esp.mr;,,,,GC-HE
+23003,Mohamed MAHFOUDH,Sidi,23003@esp.mr;,,,,GC-HE
+23107,NAMOU,Ahmed,23107@esp.mr;,,,,GC-HE
+23049,Malek ABDELLA MOHAMED LEMINE,Mohamed,23049@esp.mr;,,,,GC-HE
+23035,El Ghader MOHAMED YESLEM ETVAGHA,Abd,23035@esp.mr;,,,,GC-HE
+23037,ABDALLA,Vatimetou,23037@esp.mr;,,,,MPG
+23276,Ahmed,Hendou,23276@esp.mr;,,,,MPG
+23075,MOHAMEDA,Val,23075@esp.mr;,,,,MPG
+23004,Mahmoud EMEINE,Sidi,23004@esp.mr;,,,,MPG
+23268,El Vadli ZEYAD,Oum,23268@esp.mr;,,,,MPG
+23262,HAWBA,Aminetou,23262@esp.mr;,,,,MPG
+23057,AHMED MEWLOUD,Khadijetou,23057@esp.mr;,,,,MPG
+23098,cheikh CHEIGUER,Ely,23098@esp.mr;,,,,MPG
+23056,ELY BRAHIM,Lalla,23056@esp.mr;,,,,MPG
+23039,MOHAMED EL WEISS,Sidiya,23039@esp.mr;,,,,MPG
+23202,MOHAMED VAL,Zeinebou,23202@esp.mr;,,,,MPG
+23078,EBATT,Sidi,23078@esp.mr;,,,,MPG
+23082,SOW,Moussa,23082@esp.mr;,,,,MPG
+23060,Housseine DIOP,El,23060@esp.mr;,,,,MPG
+23015,El Moctar ECH TTE,Mohamed,23015@esp.mr;,,,,MPG

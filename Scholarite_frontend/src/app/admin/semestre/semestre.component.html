@@ -1,0 +1,240 @@
+<div class="semestre-container">
+  <!-- Header -->
+  <header class="header">
+    <h1 class="title">Gestion des semestres</h1>
+    <button *ngIf="!showForm" class="btn-primary" (click)="showAddSemestreForm()">
+      <span class="material-icons">add</span>
+      <span>Nouveau semestre</span>
+    </button>
+  </header>
+
+  <!-- Alertes -->
+  <div class="alerts">
+    <div *ngIf="error" class="alert alert-error">
+      <span class="material-icons">error</span>
+      <span>{{ error }}</span>
+    </div>
+    <div *ngIf="success" class="alert alert-success">
+      <span class="material-icons">check_circle</span>
+      <span>{{ success }}</span>
+    </div>
+  </div>
+
+  <!-- Formulaire -->
+  <section class="card" *ngIf="showForm">
+    <div class="card-content">
+      <h2 class="section-title">{{ editMode ? 'Modifier le semestre' : 'Ajouter un semestre' }}</h2>
+
+      <form [formGroup]="semestreForm" (ngSubmit)="submitSemestreForm()">
+        <div class="form-grid">
+          <!-- Semestre -->
+          <div class="form-field">
+            <label for="semestre">Semestre<span class="required">*</span></label>
+            <input
+              type="text"
+              id="semestre"
+              formControlName="semestre"
+              placeholder="Ex: S1"
+              [ngClass]="{ 'invalid': submitted && f['semestre'].errors }">
+            <div *ngIf="submitted && f['semestre'].errors" class="error-message">
+              Le semestre est requis.
+            </div>
+          </div>
+
+          <!-- Année -->
+          <div class="form-field">
+            <label for="annee">Année<span class="required">*</span></label>
+            <input
+              type="number"
+              id="annee"
+              formControlName="annee"
+              placeholder="Ex: 2024"
+              [ngClass]="{ 'invalid': submitted && f['annee'].errors }">
+            <div *ngIf="submitted && f['annee'].errors" class="error-message">
+              Année invalide.
+            </div>
+          </div>
+
+          <!-- Nombre de semaines -->
+          <div class="form-field">
+            <label for="nombreSemaines">Nombre de semaines<span class="required">*</span></label>
+            <input
+              type="number"
+              id="nombreSemaines"
+              formControlName="nombreSemaines"
+              placeholder="Ex: 16"
+              [ngClass]="{ 'invalid': submitted && f['nombreSemaines'].errors }">
+            <div *ngIf="submitted && f['nombreSemaines'].errors" class="error-message">
+              Nombre de semaines invalide.
+            </div>
+          </div>
+
+          <!-- Crédits -->
+          <div class="form-field">
+            <label for="creditSpecialite">Crédit Spécialité<span class="required">*</span></label>
+            <input
+              type="number"
+              id="creditSpecialite"
+              formControlName="creditSpecialite"
+              placeholder="Ex: 4"
+              [ngClass]="{ 'invalid': submitted && f['creditSpecialite'].errors }">
+            <div *ngIf="submitted && f['creditSpecialite'].errors" class="error-message">
+              Le crédit doit être supérieur ou égal à 0.
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="creditHE">Crédit HE<span class="required">*</span></label>
+            <input
+              type="number"
+              id="creditHE"
+              formControlName="creditHE"
+              placeholder="Ex: 12"
+              [ngClass]="{ 'invalid': submitted && f['creditHE'].errors }">
+            <div *ngIf="submitted && f['creditHE'].errors" class="error-message">
+              Le crédit doit être supérieur ou égal à 0.
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="creditST">Crédit ST<span class="required">*</span></label>
+            <input
+              type="number"
+              id="creditST"
+              formControlName="creditST"
+              placeholder="Ex: 14"
+              [ngClass]="{ 'invalid': submitted && f['creditST'].errors }">
+            <div *ngIf="submitted && f['creditST'].errors" class="error-message">
+              Le crédit doit être supérieur ou égal à 0.
+            </div>
+          </div>
+
+          <!-- Dates -->
+          <div class="form-field">
+            <label for="dateDebut">Date de début<span class="required">*</span></label>
+            <input
+              type="date"
+              id="dateDebut"
+              formControlName="dateDebut"
+              [ngClass]="{ 'invalid': submitted && f['dateDebut'].errors }">
+            <div *ngIf="submitted && f['dateDebut'].errors" class="error-message">
+              Date de début requise.
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="dateFin">Date de fin<span class="required">*</span></label>
+            <input
+              type="date"
+              id="dateFin"
+              formControlName="dateFin"
+              [ngClass]="{ 'invalid': submitted && f['dateFin'].errors }">
+            <div *ngIf="submitted && f['dateFin'].errors" class="error-message">
+              Date de fin requise.
+            </div>
+          </div>
+        </div>
+
+        <!-- Boutons -->
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="loading">
+            <span *ngIf="loading" class="spinner"></span>
+            <span>{{ editMode ? 'Mettre à jour' : 'Enregistrer' }}</span>
+          </button>
+          <button type="button" class="btn-secondary" (click)="cancelForm()">
+            <span>Annuler</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Liste & import CSV -->
+  <div *ngIf="!showForm" class="main-content">
+
+    <!-- Import CSV -->
+    <section class="card import-section">
+      <div class="card-content">
+        <h2 class="section-title">Importer des semestres</h2>
+        <div class="import-controls">
+          <div class="file-input-wrapper">
+            <input type="file" id="csv-file" (change)="onFileSelected($event)" accept=".csv">
+            <label for="csv-file" class="file-label">
+              <span class="material-icons">upload_file</span>
+              <span>{{ selectedFile ? selectedFile.name : 'Choisir un fichier CSV' }}</span>
+            </label>
+          </div>
+          <button
+            class="btn-success"
+            [disabled]="!selectedFile || importInProgress"
+            (click)="importSemestreCSV()">
+            <span *ngIf="importInProgress" class="spinner"></span>
+            <span>{{ importInProgress ? 'Importation...' : 'Importer' }}</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Liste des semestres -->
+    <section class="card">
+      <div class="card-content">
+        <h2 class="section-title">Liste des semestres</h2>
+
+        <!-- Chargement -->
+        <div *ngIf="loading" class="loading-container">
+          <div class="spinner large"></div>
+        </div>
+
+        <!-- Aucun résultat -->
+        <div *ngIf="!loading && semestres.length === 0" class="empty-state">
+          <span class="material-icons">event_busy</span>
+          <p>Aucun semestre trouvé.</p>
+        </div>
+
+        <!-- Table des semestres -->
+        <div *ngIf="!loading && semestres.length > 0" class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Semestre</th>
+                <th>Année</th>
+                <th>Semaines</th>
+                <th>Crédit Spécialité</th>
+                <th>Crédit HE</th>
+                <th>Crédit ST</th>
+                <th>Période</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of semestres">
+                <td><span class="semester-badge">{{ s.semestre }}</span></td>
+                <td>{{ s.annee }}</td>
+                <td>{{ s.nombreSemaines }}</td>
+                <td>{{ s.creditSpecialite }}</td>
+                <td>{{ s.creditHE }}</td>
+                <td>{{ s.creditST }}</td>
+                <td class="period-cell">
+                  <span class="date-range">
+                    <span class="date">{{ s.dateDebut | date:'dd/MM/yyyy' }}</span>
+                    <span class="separator">-</span>
+                    <span class="date">{{ s.dateFin | date:'dd/MM/yyyy' }}</span>
+                  </span>
+                </td>
+                <td class="actions-cell">
+                  <button class="btn-icon btn-edit" (click)="editSemestre(s)" title="Modifier">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button class="btn-icon btn-delete" (click)="deleteSemestre(s.idSemestre!)" title="Supprimer">
+                    <span class="material-icons">delete</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+

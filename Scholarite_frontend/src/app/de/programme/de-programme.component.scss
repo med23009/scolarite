@@ -1,0 +1,503 @@
+// Variables - Green color scheme
+$primary: #2e7d32; // Green 800
+$primary-hover: #1b5e20; // Green 900
+$primary-light: rgba($primary, 0.1);
+$success: #43a047; // Green 600
+$success-hover: #388e3c; // Green 700
+$success-light: #e8f5e9; // Green 50
+$warning: #ffc107;
+$warning-hover: #e0a800;
+$danger: #dc3545;
+$danger-hover: #c82333;
+$danger-light: #fdecea;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+$green-dark: #1b5e20; // Green 900
+$white: #fff;
+$radius: 8px;
+$shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+$transition: all 0.2s ease;
+
+// Base styles - Full screen layout
+:host {
+  display: block;
+  padding: 0;
+  margin: 0;
+  background-color: #f7f9fc;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  color: $gray-800;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.programme-container {
+  width: 100%;
+  padding: 1.5rem;
+}
+
+// Card component
+.card {
+  background-color: $white;
+  border-radius: $radius;
+  box-shadow: $shadow;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  border: 1px solid $gray-300;
+  
+  .card-content {
+    padding: 1.5rem;
+  }
+}
+
+// Typography
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: $green-dark;
+  margin: 0;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: $green-dark;
+  margin: 0 0 1.25rem 0;
+  
+  .entity-name {
+    color: $primary;
+    font-weight: 700;
+  }
+}
+
+.text-center {
+  text-align: center;
+}
+
+// Header
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem 0;
+}
+
+// Selection form
+.selection-card {
+  margin-bottom: 1.5rem;
+}
+
+.selection-form {
+  width: 100%;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.form-field {
+  margin-bottom: 0.5rem;
+  
+  label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: $gray-800;
+  }
+  
+  .select-control, .form-input {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid $gray-300;
+    border-radius: $radius;
+    font-size: 0.95rem;
+    background-color: $white;
+    transition: $transition;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+  }
+  
+  .select-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23495057' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px;
+    padding-right: 2.5rem;
+  }
+}
+
+// Alerts
+.alerts {
+  margin-bottom: 1.5rem;
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: $radius;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  
+  &.alert-error {
+    background-color: $danger-light;
+    color: $danger;
+    border-left: 4px solid $danger;
+  }
+  
+  .material-icons {
+    font-size: 1.1rem;
+  }
+}
+
+// Table
+.table-container {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  
+  th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid $gray-200;
+  }
+  
+  th {
+    background-color: $gray-100;
+    font-weight: 600;
+    color: $gray-800;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    white-space: nowrap;
+  }
+  
+  tbody tr {
+    transition: $transition;
+    
+    &:hover {
+      background-color: rgba($primary, 0.03);
+    }
+    
+    &.first-row {
+      border-top: 2px solid $gray-300;
+    }
+  }
+  
+  .ue-cell {
+    background-color: $success-light;
+    font-weight: 500;
+    color: $primary;
+    border-right: 1px solid $gray-300;
+  }
+  
+  .ue-code {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background-color: $primary-light;
+    color: $primary;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  
+  .em-code {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background-color: rgba($gray-600, 0.1);
+    color: $gray-700;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.85rem;
+  }
+  
+  .semester-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background-color: rgba($success, 0.1);
+    color: $success;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.85rem;
+  }
+  
+  .actions-cell {
+    white-space: nowrap;
+    display: flex;
+    gap: 0.25rem;
+  }
+  
+  .edit-row {
+    background-color: $gray-100;
+    
+    .edit-cell {
+      padding: 1.5rem;
+    }
+  }
+}
+
+// Edit form
+.edit-form {
+  width: 100%;
+}
+
+.edit-section {
+  margin-bottom: 1.5rem;
+  
+  .edit-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: $primary;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid $gray-300;
+  }
+}
+
+.modules-array {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.module-item {
+  padding: 1rem;
+  background-color: $white;
+  border-radius: $radius;
+  border: 1px solid $gray-300;
+}
+
+// Buttons
+.btn-primary, .btn-secondary, .btn-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: $radius;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: $transition;
+  border: none;
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .material-icons {
+    font-size: 1.1rem;
+  }
+}
+
+.btn-primary {
+  background-color: $primary;
+  color: $white;
+  
+  &:hover:not(:disabled) {
+    background-color: $primary-hover;
+  }
+}
+
+.btn-secondary {
+  background-color: $gray-200;
+  color: $gray-800;
+  
+  &:hover:not(:disabled) {
+    background-color: $gray-300;
+  }
+}
+
+.btn-danger {
+  background-color: $danger;
+  color: $white;
+  
+  &:hover:not(:disabled) {
+    background-color: $danger-hover;
+  }
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: $radius;
+  border: none;
+  cursor: pointer;
+  transition: $transition;
+  background-color: transparent;
+  
+  .material-icons {
+    font-size: 1.1rem;
+  }
+  
+  &.btn-edit {
+    color: $warning;
+    
+    &:hover {
+      background-color: rgba($warning, 0.1);
+    }
+  }
+  
+  &.btn-delete {
+    color: $danger;
+    
+    &:hover {
+      background-color: rgba($danger, 0.1);
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+// Loading and empty states
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 0;
+  color: $gray-600;
+  
+  .material-icons {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+  
+  p {
+    font-size: 1rem;
+    margin: 0;
+  }
+}
+
+// Spinner
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: $white;
+  animation: spin 0.8s linear infinite;
+  
+  &.large {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-width: 3px;
+    border-color: rgba($primary, 0.2);
+    border-top-color: $primary;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Confirmation Dialog
+.confirm-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  
+  .dialog-content {
+    background-color: $white;
+    border-radius: $radius;
+    padding: 1.5rem;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    
+    h3 {
+      margin-top: 0;
+      color: $gray-800;
+      font-size: 1.25rem;
+    }
+    
+    p {
+      color: $gray-700;
+      margin-bottom: 1.5rem;
+    }
+    
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 992px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  .card .card-content {
+    padding: 1rem;
+  }
+  
+  .data-table {
+    font-size: 0.85rem;
+    
+    th, td {
+      padding: 0.6rem 0.75rem;
+    }
+  }
+}

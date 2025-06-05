@@ -1,0 +1,359 @@
+/* Historique Component Styles */
+
+// Variables - Green color scheme (matching programme component)
+$primary: #2e7d32; // Green 800
+$primary-hover: #1b5e20; // Green 900
+$primary-light: rgba($primary, 0.1);
+$success: #43a047; // Green 600
+$success-hover: #388e3c; // Green 700
+$success-light: #e8f5e9; // Green 50
+$warning: #ffc107;
+$warning-hover: #e0a800;
+$danger: #dc3545;
+$danger-hover: #c82333;
+$danger-light: #fdecea;
+$info: #0dcaf0;
+$info-light: #d1ecf1;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+$green-dark: #1b5e20; // Green 900
+$white: #fff;
+$radius: 8px;
+$shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+$transition: all 0.2s ease;
+
+:host {
+  display: block;
+  width: 100%;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  color: $gray-800;
+}
+
+// Title styling
+.titre {
+  margin-bottom: 1.5rem;
+  color: $green-dark;
+  font-size: 1.75rem;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 0.75rem;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 3px;
+    background-color: $primary;
+    border-radius: 3px;
+  }
+}
+
+// Filter container
+.filter-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  background-color: $white;
+  padding: 1.25rem;
+  border-radius: $radius;
+  box-shadow: $shadow;
+  border: 1px solid $gray-300;
+  
+  input {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.75rem 1rem;
+    border: 1px solid $gray-300;
+    border-radius: $radius;
+    font-size: 0.95rem;
+    transition: $transition;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+    
+    &[type="date"] {
+      min-width: 160px;
+    }
+    
+    &::placeholder {
+      color: $gray-500;
+    }
+  }
+  
+  button {
+    padding: 0.75rem 1.25rem;
+    background-color: $gray-200;
+    border: 1px solid $gray-300;
+    border-radius: $radius;
+    color: $gray-800;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: $transition;
+    
+    &:hover {
+      background-color: $gray-300;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+    
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+  }
+}
+
+// Table container
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  box-shadow: $shadow;
+  border-radius: $radius;
+  border: 1px solid $gray-300;
+  
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: $white;
+    font-size: 0.95rem;
+    
+    thead {
+      tr {
+        background-color: $primary-light;
+        
+        th {
+          padding: 1rem;
+          text-align: left;
+          font-weight: 600;
+          color: $green-dark;
+          border-bottom: 2px solid rgba($primary, 0.2);
+          position: sticky;
+          top: 0;
+          background-color: $primary-light;
+          z-index: 10;
+          white-space: nowrap;
+          
+          &:first-child {
+            border-top-left-radius: $radius;
+          }
+          
+          &:last-child {
+            border-top-right-radius: $radius;
+          }
+        }
+      }
+    }
+    
+    tbody {
+      tr {
+        transition: $transition;
+        
+        &:nth-child(even) {
+          background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        &:hover {
+          background-color: rgba($primary, 0.05);
+        }
+        
+        td {
+          padding: 0.75rem 1rem;
+          border-bottom: 1px solid $gray-200;
+          color: $gray-800;
+          
+          &:first-child {
+            font-weight: 500;
+          }
+        }
+        
+        &:last-child {
+          td {
+            border-bottom: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Empty state styles
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: $gray-600;
+  background-color: $white;
+  border-radius: $radius;
+  box-shadow: $shadow;
+  border: 1px solid $gray-300;
+  
+  i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+    color: $primary;
+  }
+  
+  p {
+    font-size: 1.1rem;
+    margin-bottom: 1.25rem;
+    color: $gray-800;
+  }
+}
+
+// Badge styles
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  
+  &.badge-primary {
+    background-color: $primary-light;
+    color: $primary;
+  }
+  
+  &.badge-danger {
+    background-color: $danger-light;
+    color: $danger;
+  }
+  
+  &.badge-success {
+    background-color: $success-light;
+    color: $success;
+  }
+  
+  &.badge-warning {
+    background-color: rgba($warning, 0.1);
+    color: $warning-hover;
+  }
+}
+
+// Animation for loading or empty states
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.loading {
+  animation: pulse 1.5s infinite;
+  text-align: center;
+  padding: 2rem;
+  color: $gray-600;
+}
+
+// Utility classes
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-primary {
+  color: $primary;
+}
+
+.text-success {
+  color: $success;
+}
+
+.text-danger {
+  color: $danger;
+}
+
+.text-warning {
+  color: $warning;
+}
+
+// Responsive styles
+@media (max-width: 768px) {
+  .titre {
+    font-size: 1.5rem;
+    
+    &::after {
+      width: 60px;
+    }
+  }
+  
+  .filter-container {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    
+    input, button {
+      min-width: 100%;
+      width: 100%;
+    }
+  }
+  
+  .table-container {
+    .styled-table {
+      font-size: 0.875rem;
+      
+      thead th, tbody td {
+        padding: 0.75rem;
+      }
+    }
+  }
+  
+  .empty-state {
+    padding: 2rem 1rem;
+    
+    i {
+      font-size: 2.5rem;
+    }
+    
+    p {
+      font-size: 1rem;
+    }
+  }
+}
+
+// Additional styles for specific action types
+.action-create {
+  color: $success;
+  font-weight: 500;
+}
+
+.action-update {
+  color: $warning-hover;
+  font-weight: 500;
+}
+
+.action-delete {
+  color: $danger;
+  font-weight: 500;
+}
+
+.action-login {
+  color: $info;
+  font-weight: 500;
+}

@@ -1,0 +1,319 @@
+<!-- Bandeau supérieur -->
+
+
+<!-- Main Navbar -->
+<nav class="main-navbar" [class.scrolled]="isScrolled">
+  <div class="container">
+    <!-- Logo -->
+    <a routerLink="/app" class="logo" aria-label="Accueil ESP">
+      <img src="images/logo_esp.png" alt="ESP Logo">
+      <span class="logo-title">ESP</span>
+    </a>
+
+    <!-- Desktop Navigation Links -->
+    <div class="nav-links">
+      <!-- Utilisateurs - Admin only -->
+      <div class="nav-item" *ngIf="authService.isAdmin()">
+        <a routerLink="/admin/users" routerLinkActive="active" class="nav-link">
+          <i class="material-icons" aria-hidden="true">people</i>
+          <span>Utilisateurs</span>
+        </a>
+      </div>
+
+      <!-- Départements - Admin only -->
+      <div class="nav-item" *ngIf="authService.hasAnyRole(['ROLE_ADMIN','ROLE_DE'])">
+        <a routerLink="/admin/departements" routerLinkActive="active" class="nav-link" aria-label="Gérer les départements">
+          <i class="material-icons" aria-hidden="true">apartment</i>
+          <span>Départements</span>
+        </a>
+      </div>
+
+      <!-- Pôles - Admin only -->
+      <div class="nav-item" *ngIf="authService.hasAnyRole(['ROLE_ADMIN','ROLE_DE'])">
+        <a routerLink="/admin/poles" routerLinkActive="active" class="nav-link" aria-label="Gérer les pôles">
+          <i class="material-icons" aria-hidden="true">business</i>
+          <span>Pôles</span>
+        </a>
+      </div>
+
+      <!-- Semestres - Admin only -->
+      <div class="nav-item" *ngIf="authService.hasAnyRole(['ROLE_ADMIN','ROLE_DE'])">
+        <a routerLink="/admin/semestres" routerLinkActive="active" class="nav-link" aria-label="Gérer les semestres">
+          <i class="material-icons" aria-hidden="true">date_range</i>
+          <span>Semestres</span>
+        </a>
+      </div>
+
+
+      <!-- Programmes - CHEF_DEPT, CHEF_POLE-->
+      <div class="nav-item" *ngIf="authService.hasAnyRole(['ROLE_CHEF_DEPT', 'ROLE_CHEF_POLE'])">
+        <a routerLink="/admin/programmes" routerLinkActive="active" class="nav-link">
+          <i class="material-icons" aria-hidden="true">menu_book</i>
+          <span>Programmes</span>
+        </a>
+      </div>
+
+      <div class="nav-item" *ngIf="authService.hasRole('ROLE_DE')">
+        <a
+          routerLink="/de/programmes"
+          routerLinkActive="active"
+          class="nav-link">
+            <i class="material-icons" aria-hidden="true">menu_book</i>
+            <span>Programmes</span>
+        </a>
+      </div>
+
+      <!-- Étudiant - RS only -->
+      <div class="nav-item" *ngIf="authService.isRS()">
+        <a routerLink="/admin/etudiant" routerLinkActive="active" class="nav-link">
+          <i class="material-icons" aria-hidden="true">school</i>
+          <span>Étudiant</span>
+        </a>
+      </div>
+
+
+      <!-- Étudiant - DE only -->
+      <div class="nav-item" *ngIf="authService.isDE()">
+        <a routerLink="/admin/etudiant" routerLinkActive="active" class="nav-link">
+          <i class="material-icons" aria-hidden="true">school</i>
+          <span>Étudiant</span>
+        </a>
+      </div>
+
+      <!-- Bulletin - RS, DE, CHEF_POLE, CHEF_DEPT -->
+      <div class="nav-item" *ngIf="authService.hasAnyRole([ 'ROLE_RS'])">
+        <a routerLink="/scolarite/releve-note" routerLinkActive="active" class="nav-link">
+          <i class="material-icons" aria-hidden="true">description</i>
+          <span>Bulletin</span>
+        </a>
+      </div>
+
+      <!-- Plan d'étude - RS -->
+      <div class="nav-item" *ngIf="authService.hasAnyRole(['ROLE_RS'])">
+        <a routerLink="/scolarite/plan-etudes" routerLinkActive="active" class="nav-link">
+          <i class="material-icons" aria-hidden="true">assignment_ind</i>
+          <span>Plan d'étude</span>
+        </a>
+      </div>
+
+      <!-- Notes - CHEF_DEPT, CHEF_POLE -->
+      <div class="nav-item" *ngIf="authService.hasRole('ROLE_CHEF_DEPT')">
+        <a routerLink="/chefdept/notes" routerLinkActive="active" class="nav-link">
+          <i class="material-icons" aria-hidden="true">assignment</i>
+          <span>Notes</span>
+        </a>
+      </div>
+      <div class="nav-item" *ngIf="authService.hasRole('ROLE_CHEF_POLE')">
+        <a routerLink="/chefpole/notes" routerLinkActive="active" class="nav-link">
+          <i class="material-icons" aria-hidden="true">assignment</i>
+          <span>Notes</span>
+        </a>
+      </div>
+      <div class="nav-item" *ngIf="authService.hasRole('ROLE_DE')">
+        <a routerLink="/de/notes" routerLinkActive="active" class="nav-link">
+          <i class="material-icons" aria-hidden="true">assignment</i>
+          <span> Notes </span>
+        </a>
+      </div>
+
+      <!-- Historique - DSI ,ADMIN -->
+      <div class="nav-item" *ngIf="authService.hasAnyRole(['DSI','ADMIN'])">
+        <a routerLink="/admin/historique" routerLinkActive="active" class="nav-link">
+          <i class="material-icons">history</i>
+          <span>Historique</span>
+        </a>
+      </div>
+
+      <!-- PV Export - CHEF_DEPT -->
+      <div class="nav-item" *ngIf="authService.hasRole('ROLE_CHEF_DEPT')">
+        <a class="nav-link" routerLink="/chefdept/pv" routerLinkActive="active">
+          <i class="material-icons" aria-hidden="true">description</i>
+          <span>Génération PV</span>
+        </a>
+      </div>
+
+      
+    </div>
+
+    <!-- User Menu -->
+    <div class="user-menu">
+      <button class="user-button" (click)="toggleUserMenu(); $event.stopPropagation()">
+        <i class="material-icons" aria-hidden="true">account_circle</i>
+        <span>{{ currentUser?.email || 'Mon compte' }}</span>
+        <i class="material-icons chevron" [class.rotate]="isUserMenuOpen">expand_more</i>
+      </button>
+
+      <div class="user-dropdown" [class.visible]="isUserMenuOpen">
+        <div class="dropdown-header">Mon compte</div>
+        <a routerLink="/auth/change-password" class="dropdown-item">
+          <i class="material-icons" aria-hidden="true">vpn_key</i>
+          Changer le mot de passe
+        </a>
+        <button (click)="logout()" class="dropdown-item logout">
+          <i class="material-icons" aria-hidden="true">exit_to_app</i>
+          Déconnexion
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" (click)="toggleMobileMenu()" aria-label="Menu">
+      <i class="material-icons">{{ isMobileMenuOpen ? 'close' : 'menu' }}</i>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" [class.open]="isMobileMenuOpen" [attr.aria-hidden]="!isMobileMenuOpen">
+  <div class="mobile-menu-header">
+    <div class="logo">
+      <img src="assets/images/logo_esp.png" alt="ESP Logo">
+      <div class="logo-title">École Supérieure Polytechnique</div>
+    </div>
+    <button class="close-btn" (click)="toggleMobileMenu()" aria-label="Fermer le menu">
+      <i class="material-icons">close</i>
+    </button>
+  </div>
+
+  <div class="mobile-menu-body">
+    <!-- User Info -->
+    <div class="mobile-user-info">
+      <div class="user-avatar">
+        <i class="material-icons">account_circle</i>
+      </div>
+      <div class="user-details">
+        <div class="user-name">{{ currentUser?.nom || 'Utilisateur' }}</div>
+        <div class="user-email">{{ currentUser?.email || 'utilisateur@esp.sn' }}</div>
+      </div>
+    </div>
+
+    <div class="mobile-search">
+      <div class="search-box">
+        <i class="material-icons">search</i>
+        <input type="text" placeholder="Rechercher...">
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Links with role-based access -->
+    <!-- Utilisateurs - Admin only -->
+    <div class="mobile-nav-item" *ngIf="authService.isAdmin()">
+      <a routerLink="/admin/users" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMobileMenu()">
+        <i class="material-icons">people</i>
+        <span>Utilisateurs</span>
+      </a>
+    </div>
+
+    <!-- Départements - Admin only -->
+    <div class="mobile-nav-item" *ngIf="authService.hasAnyRole(['ROLE_ADMIN','ROLE_DE'])">
+      <a routerLink="/admin/departements" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMobileMenu()" aria-label="Gérer les départements">
+          <i class="material-icons">apartment</i>
+        <span>Départements</span>
+      </a>
+        </div>
+
+    <!-- Pôles - Admin only -->
+    <div class="mobile-nav-item" *ngIf="authService.hasAnyRole(['ROLE_ADMIN','ROLE_DE'])">
+      <a routerLink="/admin/poles" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMobileMenu()" aria-label="Gérer les pôles">
+        <i class="material-icons">business</i>
+        <span>Pôles</span>
+      </a>
+      </div>
+
+    <!-- Semestres - Admin only -->
+    <div class="mobile-nav-item" *ngIf="authService.hasAnyRole(['ROLE_ADMIN','ROLE_DE'])">
+      <a routerLink="/admin/semestres" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMobileMenu()" aria-label="Gérer les semestres">
+        <i class="material-icons">date_range</i>
+        <span>Semestres</span>
+      </a>
+    </div>
+
+    <!-- Programmes - CHEF_DEPT, CHEF_POLE, DE -->
+    <div class="mobile-nav-item" *ngIf="authService.hasAnyRole(['ROLE_CHEF_DEPT', 'ROLE_CHEF_POLE', 'ROLE_DE'])">
+      <a routerLink="/admin/programmes" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMobileMenu()" aria-label="Gérer les programmes">
+        <i class="material-icons">menu_book</i>
+        <span>Programmes</span>
+      </a>
+    </div>
+
+    <!-- Étudiant - DE only -->
+    <div class="mobile-nav-item" *ngIf="authService.isRS()">
+      <a routerLink="/admin/etudiant" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMobileMenu()">
+        <i class="material-icons">school</i>
+        <span>Étudiant</span>
+      </a>
+    </div>
+
+    <!-- Bulletin - RS, DE -->
+    <div class="mobile-nav-item" *ngIf="authService.hasAnyRole(['ROLE_RS', 'ROLE_DE'])">
+      <a routerLink="/admin/bulletin" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMobileMenu()">
+        <i class="material-icons">description</i>
+        <span>Bulletin</span>
+      </a>
+    </div>
+
+    <!-- Plan d'étude - RS -->
+    <div class="mobile-nav-item" *ngIf="authService.hasAnyRole(['ROLE_RS'])">
+      <a routerLink="/scolarite/plan-etudes" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMobileMenu()">
+        <i class="material-icons">assignment_ind</i>
+        <span>Plan d'étude</span>
+      </a>
+    </div>
+
+    <!-- Notes - CHEF_DEPT, CHEF_POLE -->
+    <div class="mobile-nav-item" *ngIf="authService.hasRole('ROLE_CHEF_DEPT')">
+      <a routerLink="/chefdept/notes" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMobileMenu()">
+        <i class="material-icons">assignment</i>
+        <span>Notes</span>
+      </a>
+    </div>
+    <div class="mobile-nav-item" *ngIf="authService.hasRole('ROLE_CHEF_POLE')">
+      <a routerLink="/chefpole/notes" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMobileMenu()">
+        <i class="material-icons">assignment</i>
+        <span>Notes</span>
+      </a>
+    </div>
+    <div class="mobile-nav-item" *ngIf="authService.hasRole('ROLE_DE')">
+      <a routerLink="/de/notes" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMobileMenu()">
+        <i class="material-icons">assignment</i>
+        <span>Gestion des Notes (DE)</span>
+      </a>
+    </div>
+
+    <!-- Historique - Admin ,DSI -->
+    <div class="mobile-nav-item" *ngIf="authService.hasAnyRole(['DSI', 'ADMIN'])">
+      <a routerLink="/admin/historique" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMobileMenu()">
+        <i class="material-icons">history</i>
+        <span>Historique</span>
+      </a>
+    </div>
+
+    <!-- PV Export - CHEF_DEPT -->
+    <div class="mobile-nav-item" *ngIf="authService.hasRole('ROLE_CHEF_DEPT')">
+      <a routerLink="/chefdept/pv" routerLinkActive="active" class="mobile-nav-link" (click)="toggleMobileMenu()">
+        <i class="material-icons">description</i>
+        <span>Génération PV</span>
+      </a>
+    </div>
+
+    <div class="mobile-divider"></div>
+
+    <div class="mobile-nav-item">
+      <a routerLink="/admin/change-password" class="mobile-nav-link" (click)="toggleMobileMenu()">
+        <i class="material-icons">vpn_key</i>
+        <span>Changer le mot de passe</span>
+      </a>
+    </div>
+
+    <div class="mobile-nav-item">
+      <a (click)="logout(); toggleMobileMenu()" class="mobile-nav-link mobile-logout">
+        <i class="material-icons">exit_to_app</i>
+        <span>Déconnexion</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Router Outlet for Child Components -->
+<div class="content-container">
+  <router-outlet></router-outlet>
+</div>

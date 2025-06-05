@@ -1,0 +1,50 @@
+<div class="card">
+  <div class="card-header">
+    <h1>Génération de Procès-Verbaux (PV)</h1>
+  </div>
+
+  <!-- Alertes -->
+  <div *ngIf="error" class="alert alert-danger">
+    <i class="material-icons">error</i> {{ error }}
+  </div>
+  <div *ngIf="success" class="alert alert-success">
+    <i class="material-icons">check_circle</i> {{ success }}
+  </div>
+
+  <div class="card-body">
+    <div class="pv-info">
+      <div class="info-item">
+        <label>Département:</label>
+        <span *ngIf="departement">{{ departement.codeDep }} - {{ departement.intitule }}</span>
+        <span *ngIf="!departement" class="text-muted">(Chargement...)</span>
+      </div>
+    </div>
+
+    <div class="pv-form">
+      <h2>Générer un PV</h2>
+      <p class="description">
+        Générez un PV pour votre département en sélectionnant un semestre.
+      </p>
+
+      <div class="form-group">
+        <label for="semestre">Semestre*</label>
+        <select [(ngModel)]="selectedSemestreId" id="semestre" class="form-control" required>
+          <option [ngValue]="null">-- Sélectionner un semestre --</option>
+          <option *ngFor="let sem of semestres" [ngValue]="sem.idSemestre">
+            {{ getSemestreLabel(sem) }}
+          </option>
+        </select>
+        <div class="form-text">
+          Sélectionnez le semestre pour lequel vous souhaitez générer un PV.
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-primary" (click)="generatePv()" [disabled]="!selectedSemestreId || generating || !departement">
+          <span *ngIf="generating" class="spinner-border spinner-border-sm"></span>
+          {{ generating ? 'Génération en cours...' : 'Générer le PV' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

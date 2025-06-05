@@ -1,0 +1,257 @@
+<div class="releve-container">
+  <header class="header">
+    <h1 class="title">Génération de Relevé de Notes</h1>
+    <div class="tab-buttons">
+      <button 
+        class="tab-button" 
+        [class.active]="modeSelection === 'individuel'" 
+        (click)="modeSelection = 'individuel'"
+      >
+        <span class="material-icons">person</span>
+        <span>Relevé individuel</span>
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="modeSelection === 'masse'" 
+        (click)="modeSelection = 'masse'"
+      >
+        <span class="material-icons">group</span>
+        <span>Génération en masse</span>
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="modeSelection === 'departement'" 
+        (click)="modeSelection = 'departement'"
+      >
+        <span class="material-icons">business</span>
+        <span>Par département</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Alertes -->
+  <div class="alerts">
+    <div *ngIf="error" class="alert alert-error">
+      <span class="material-icons">error</span>
+      <span>{{ error }}</span>
+      <button class="alert-close" (click)="clearError()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div *ngIf="success" class="alert alert-success">
+      <span class="material-icons">check_circle</span>
+      <span>{{ success }}</span>
+      <button class="alert-close" (click)="clearSuccess()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- SECTION INDIVIDUEL -->
+  <section class="card" *ngIf="modeSelection === 'individuel'">
+    <div class="card-header">
+      <h2 class="section-title">Relevé individuel</h2>
+    </div>
+    <div class="card-content">
+      <form (ngSubmit)="generateReleve()">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="matricule">Matricule<span class="required">*</span></label>
+            <div class="input-wrapper">
+              <span class="material-icons input-icon">badge</span>
+              <input 
+                type="text" 
+                id="matricule" 
+                [(ngModel)]="matricule" 
+                name="matricule" 
+                placeholder="Ex: 20000"
+                [ngClass]="{'invalid': submitted && !matricule}" 
+                required 
+              />
+            </div>
+            <div *ngIf="submitted && !matricule" class="error-message">
+              Le matricule est obligatoire
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="semestre">Semestre<span class="required">*</span></label>
+            <div class="input-wrapper">
+              <span class="material-icons input-icon">calendar_today</span>
+              <select 
+                id="semestre" 
+                [(ngModel)]="idSemestre" 
+                name="idSemestre"
+                [ngClass]="{'invalid': submitted && !idSemestre}" 
+                required
+              >
+                <option [ngValue]="null">Sélectionnez un semestre</option>
+                <option *ngFor="let sem of semestres" [ngValue]="sem.idSemestre">
+                  {{ sem.semestre }} ({{ sem.annee }})
+                </option>
+              </select>
+            </div>
+            <div *ngIf="submitted && !idSemestre" class="error-message">
+              Le semestre est obligatoire
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="loadingIndividuel">
+            <span *ngIf="loadingIndividuel" class="spinner"></span>
+            <span class="material-icons">description</span>
+            <span>Générer le relevé</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- SECTION EN MASSE -->
+  <section class="card" *ngIf="modeSelection === 'masse'">
+    <div class="card-header">
+      <h2 class="section-title">Génération en masse</h2>
+    </div>
+    <div class="card-content">
+      <div class="form-field">
+        <label for="matriculesTextarea">Liste des matricules (un par ligne ou séparés par des virgules, espaces)</label>
+        <textarea 
+          id="matriculesTextarea" 
+          [(ngModel)]="matriculesTextarea" 
+          (input)="onTextareaChange()" 
+          rows="6"
+          placeholder="20001&#10;20002&#10;20003, 20004 20005"
+        ></textarea>
+        <div class="matricules-count" *ngIf="matriculesList && matriculesList.length > 0">
+          {{ matriculesList.length }} matricule(s) détecté(s)
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="semestre-multiple">Semestre<span class="required">*</span></label>
+        <div class="input-wrapper">
+          <span class="material-icons input-icon">calendar_today</span>
+          <select 
+            id="semestre-multiple" 
+            [(ngModel)]="idSemestre" 
+            name="semestre-multiple" 
+            required
+          >
+            <option [ngValue]="null">Sélectionnez un semestre</option>
+            <option *ngFor="let sem of semestres" [ngValue]="sem.idSemestre">
+              {{ sem.semestre }} ({{ sem.annee }})
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button 
+          class="btn-primary" 
+          [disabled]="loadingMasse || !idSemestre || matriculesList.length === 0" 
+          (click)="generateRelevesEnMasse()"
+        >
+          <span *ngIf="loadingMasse" class="spinner"></span>
+          <span class="material-icons">download</span>
+          <span>Télécharger les bulletins sélectionnés</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION DÉPARTEMENT -->
+  <section class="card" *ngIf="modeSelection === 'departement'">
+    <div class="card-header">
+      <h2 class="section-title">Génération pour tout le département</h2>
+    </div>
+    <div class="card-content">
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="promotion">Promotion<span class="required">*</span></label>
+          <div class="input-wrapper">
+            <span class="material-icons input-icon">school</span>
+            <input 
+              type="text" 
+              id="promotion" 
+              [(ngModel)]="promotion" 
+              name="promotion" 
+              placeholder="Ex: 2023-2024"
+              [ngClass]="{'invalid': submitted && !promotion}" 
+              required 
+            />
+          </div>
+          <div *ngIf="submitted && !promotion" class="error-message">
+            La promotion est obligatoire
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="departement">Département<span class="required">*</span></label>
+          <div class="input-wrapper">
+            <span class="material-icons input-icon">business</span>
+            <select 
+              id="departement" 
+              [(ngModel)]="idDepartement" 
+              name="idDepartement"
+              [ngClass]="{'invalid': submitted && !idDepartement}" 
+              required
+            >
+              <option [ngValue]="null">Sélectionnez un département</option>
+              <option *ngFor="let d of departements" [ngValue]="d.idDep">
+                {{ d.codeDep }}
+              </option>
+            </select>
+          </div>
+          <div *ngIf="submitted && !idDepartement" class="error-message">
+            Le département est obligatoire
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="semestre-global">Semestre<span class="required">*</span></label>
+          <div class="input-wrapper">
+            <span class="material-icons input-icon">calendar_today</span>
+            <select 
+              id="semestre-global" 
+              [(ngModel)]="idSemestre" 
+              name="semestre-global"
+              [ngClass]="{'invalid': submitted && !idSemestre}" 
+              required
+            >
+              <option [ngValue]="null">Sélectionnez un semestre</option>
+              <option *ngFor="let s of semestres" [ngValue]="s.idSemestre">
+                {{ s.semestre }} ({{ s.annee }})
+              </option>
+            </select>
+          </div>
+          <div *ngIf="submitted && !idSemestre" class="error-message">
+            Le semestre est obligatoire
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button 
+          class="btn-primary" 
+          [disabled]="loadingDepartement" 
+          (click)="generateRelevesByPromoAndDept()"
+        >
+          <span *ngIf="loadingDepartement" class="spinner"></span>
+          <span class="material-icons">library_books</span>
+          <span>Générer pour tout le département</span>
+        </button>
+        
+        <button 
+          class="btn-success" 
+          [disabled]="loadingEmail" 
+          (click)="envoyerRelevesParEmail()"
+        >
+          <span *ngIf="loadingEmail" class="spinner"></span>
+          <span class="material-icons">send</span>
+          <span>Envoyer par email</span>
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

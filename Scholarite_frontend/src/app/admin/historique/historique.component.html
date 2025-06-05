@@ -1,0 +1,28 @@
+<h2 class="titre">Historique des actions</h2>
+
+<div class="filter-container">
+  <input type="text" [(ngModel)]="filtreAction" (input)="filtrer()" placeholder="Filtrer par action">
+  <input type="date" [(ngModel)]="filtreDate" (input)="filtrer()">
+  <button (click)="reset()">Réinitialiser</button>
+</div>
+
+<div class="table-container">
+  <table class="styled-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Utilisateur</th>
+        <th>Action</th>
+        <th>Détails</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let h of filtered">
+        <td>{{ h.dateFormatee }}</td>
+        <td>{{ h.utilisateur }}</td>
+        <td>{{ h.action }}</td>
+        <td>{{ h.details }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

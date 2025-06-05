@@ -1,0 +1,321 @@
+// Variables - Green color scheme (matching programme component)
+$primary: #2e7d32; // Green 800
+$primary-hover: #1b5e20; // Green 900
+$primary-light: rgba($primary, 0.1);
+$success: #43a047; // Green 600
+$success-hover: #388e3c; // Green 700
+$success-light: #e8f5e9; // Green 50
+$warning: #ffc107;
+$warning-hover: #e0a800;
+$danger: #dc3545;
+$danger-hover: #c82333;
+$danger-light: #fdecea;
+$info: #0dcaf0;
+$info-light: #d1ecf1;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+$green-dark: #1b5e20; // Green 900
+$white: #fff;
+$radius: 8px;
+$shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+$transition: all 0.2s ease;
+
+// Main container
+.import-container {
+  background-color: $white;
+  border-radius: $radius;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: $shadow;
+  border: 1px solid $gray-300;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  color: $gray-800;
+}
+
+// Header section
+.import-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid $gray-300;
+  
+  .import-title {
+    margin: 0;
+    color: $green-dark;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+  
+  .close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: $gray-600;
+    cursor: pointer;
+    padding: 0.25rem;
+    transition: $transition;
+    
+    &:hover {
+      color: $gray-800;
+    }
+  }
+}
+
+// Form structure
+.import-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+// Form sections
+.form-section {
+  width: 100%;
+}
+
+// Form fields
+.form-field {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  
+  .field-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: $gray-800;
+    
+    .required-indicator {
+      color: $danger;
+      margin-left: 0.25rem;
+    }
+  }
+  
+  .field-select,
+  .field-input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    border: 1px solid $gray-300;
+    border-radius: $radius;
+    background-color: $white;
+    transition: $transition;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+  }
+  
+  .field-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23495057' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px;
+    padding-right: 2.5rem;
+  }
+  
+  .file-input {
+    padding: 0.6rem 0.75rem;
+    cursor: pointer;
+  }
+  
+  .field-help {
+    font-size: 0.875rem;
+    color: $gray-600;
+    margin-top: 0.5rem;
+  }
+  
+  .field-error {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    color: $danger;
+    margin-top: 0.5rem;
+    
+    .error-icon {
+      font-size: 1.1rem;
+      margin-right: 0.375rem;
+    }
+  }
+  
+  .field-info {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    color: $info;
+    margin-top: 0.5rem;
+    
+    .info-icon {
+      font-size: 1.1rem;
+      margin-right: 0.375rem;
+    }
+  }
+}
+
+// Form actions
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  
+  .action-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: $radius;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: $transition;
+    border: none;
+    
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+    
+    .button-icon {
+      font-size: 1.25rem;
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: $white;
+      animation: spin 0.8s linear infinite;
+      margin-right: 0.5rem;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    &.submit-button {
+      background-color: $primary;
+      color: $white;
+      
+      &:hover:not(:disabled) {
+        background-color: $primary-hover;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      
+      &:active:not(:disabled) {
+        transform: translateY(0);
+      }
+    }
+    
+    &.reset-button {
+      background-color: $gray-200;
+      color: $gray-800;
+      
+      &:hover:not(:disabled) {
+        background-color: $gray-300;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      
+      &:active:not(:disabled) {
+        transform: translateY(0);
+      }
+    }
+  }
+}
+
+// Results section
+.results-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $gray-300;
+  
+  .results-title {
+    font-size: 1.25rem;
+    color: $green-dark;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+  
+  .results-success {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background-color: $success-light;
+    border-radius: $radius;
+    color: $success;
+    border-left: 4px solid $success;
+    
+    .success-icon {
+      font-size: 1.25rem;
+      margin-right: 0.5rem;
+    }
+  }
+  
+  .results-errors {
+    margin-top: 1.5rem;
+    
+    .errors-title {
+      font-size: 1.125rem;
+      margin-bottom: 0.75rem;
+      color: $gray-700;
+      font-weight: 600;
+    }
+    
+    .errors-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .error-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background-color: $danger-light;
+      border-radius: $radius;
+      color: $danger;
+      margin-bottom: 0.75rem;
+      border-left: 4px solid $danger;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      .error-icon {
+        font-size: 1.25rem;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+// Responsive styles
+@media (max-width: 768px) {
+  .import-container {
+    padding: 1rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    
+    .action-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

@@ -1,0 +1,48 @@
+<!-- src/app/auth/login/login.component.html -->
+<div class="login-container">
+  <div class="login-card">
+    <div class="logo-container">
+      <img src="images/logo_esp.png" alt="ESP Logo" />
+      <h2>Système de Gestion ESP</h2>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          formControlName="email" 
+          id="email" 
+          placeholder="exemple@domaine.com"
+          [ngClass]="{ 'is-invalid': submitted && f['email'].errors }" 
+        />
+        <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
+          <div *ngIf="f['email'].errors['required']">Email est obligatoire</div>
+          <div *ngIf="f['email'].errors['email']">Email est invalide</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input 
+          type="password" 
+          formControlName="password" 
+          id="password"
+          [ngClass]="{ 'is-invalid': submitted && f['password'].errors }" 
+        />
+        <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
+          <div *ngIf="f['password'].errors['required']">Mot de passe est obligatoire</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <button [disabled]="loading" class="btn-login">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+          Connexion
+        </button>
+      </div>
+
+      <div *ngIf="error" class="alert alert-danger mt-3">{{error}}</div>
+    </form>
+  </div>
+</div>

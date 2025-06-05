@@ -1,0 +1,159 @@
+/* src/app/admin/note/note.component.scss */
+.card {
+  background-color: var(--white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  overflow: hidden;
+  margin-bottom: 20px;
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+// 🔧 Boutons d'action avec style homogène
+.icon-button {
+  background-color: rgba(16, 185, 129, 0.1); // Vert clair
+  border: none;
+  padding: 0.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    color: #10b981; // Vert
+    font-size: 1.1rem;
+    transition: color 0.2s ease-in-out;
+  }
+
+  &:hover {
+    background-color: rgba(16, 185, 129, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &.delete {
+    background-color: rgba(239, 68, 68, 0.1); // Rouge clair
+
+    i {
+      color: #ef4444; // Rouge vif
+    }
+
+    &:hover {
+      background-color: rgba(239, 68, 68, 0.2);
+    }
+  }
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 0.95rem;
+    }
+
+    th {
+      font-weight: 600;
+      background-color: #f8fafc;
+      color: #334155;
+    }
+
+    tbody tr:hover {
+      background-color: #f1f5f9;
+    }
+
+    .actions {
+      white-space: nowrap;
+
+      .icon-button {
+        margin: 0 0.25rem;
+      }
+    }
+  }
+}
+
+// État vide
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-light);
+
+  i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+    color: var(--primary);
+  }
+
+  p {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+  }
+
+  span {
+    display: block;
+    opacity: 0.8;
+    margin-top: 0.5rem;
+  }
+}
+
+// Utilitaires
+.text-success {
+  color: var(--success);
+}
+
+.text-danger {
+  color: var(--danger);
+}
+
+.text-muted {
+  color: var(--text-light);
+  font-style: italic;
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
+}
