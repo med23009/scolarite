@@ -29,10 +29,10 @@ pipeline {
             steps {
                 script {
                     // Build Backend Image
-                    docker.build("${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER}")
+                    sh "sudo docker build -t ${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER} ."
                     
                     // Build Frontend Image
-                    docker.build("${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER}")
+                    sh "sudo docker build -t ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER} ."
                 }
             }
         }
@@ -41,14 +41,10 @@ pipeline {
             steps {
                 script {
                     // Push Backend Image
-                    docker.withRegistry("http://${DOCKER_REGISTRY}") {
-                        docker.image("${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER}").push()
-                    }
+                    sh "sudo docker push ${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER}"
                     
                     // Push Frontend Image
-                    docker.withRegistry("http://${DOCKER_REGISTRY}") {
-                        docker.image("${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER}").push()
-                    }
+                    sh "sudo docker push ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER}"
                 }
             }
         }
