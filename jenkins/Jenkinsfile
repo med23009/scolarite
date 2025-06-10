@@ -4,10 +4,21 @@ pipeline {
     environment {
         DOCKER_REGISTRY = 'localhost:5000'
         BACKEND_IMAGE = 'scolarite-backend'
-        FRONTEND_IMAGE = 'scolarite-frontend'
+        FRONTEND_IMAGE = 'scholarite-frontend'
+        GIT_REPO = 'https://github.com/med23009/scolarite.git'
+        GIT_BRANCH = 'main'
+        GIT_CREDENTIALS_ID = 'github-credentials'
     }
     
     stages {
+        stage('Checkout') {
+            steps {
+                checkout([$class: 'GitSCM', 
+                          branches: [[name: "*/${GIT_BRANCH}"]], 
+                          userRemoteConfigs: [[url: "${GIT_REPO}", credentialsId: "${GIT_CREDENTIALS_ID}"]]])
+            }
+        }
+        
         stage('Build Backend') {
             steps {
                 dir('scolarite-backend') {
@@ -49,6 +60,27 @@ pipeline {
                     
                     // Push Frontend Image
                     sh "sudo docker push ${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER}"
+                }
+            }
+        }
+        
+        stage('Update Kubernetes Manifests') {
+            steps {
+                script {
+                    // Update backend image tag
+                    sh "sed -i 's|<REGISTRY>/scolarite-backend:latest|${DOCKER_REGISTRY}/${BACKEND_IMAGE}:${BUILD_NUMBER}|g' k8s-manifests/backend-deployment.yaml"
+                    
+                    // Update frontend image tag
+                    sh "sed -i 's|<REGISTRY>/scholarite-frontend:latest|${DOCKER_REGISTRY}/${FRONTEND_IMAGE}:${BUILD_NUMBER}|g' k8s-manifests/frontend-deployment.yaml"
+                    
+                    // Commit and push changes
+                    sh """
+                        git config user.email 'jenkins@example.com'
+                        git config user.name 'Jenkins'
+                        git add k8s-manifests/
+                        git commit -m 'Update image tags to ${BUILD_NUMBER}'
+                        git push origin ${GIT_BRANCH}
+                    """
                 }
             }
         }
