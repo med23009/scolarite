@@ -1,22 +1,29 @@
 ---
-- name: Deploy Scolarite Application
-  hosts: all
+- name: Deploy Backend and MySQL
+  hosts: backend
   become: yes
   vars:
     backend_version: "{{ backend_version }}"
-    frontend_version: "{{ frontend_version }}"
     docker_registry: "localhost:5000"
+    mysql_root_password: "your_mysql_root_password"
+    mysql_database: "scolarite"
+    mysql_user: "scolarite_user"
+    mysql_password: "your_mysql_password"
 
   tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Install Docker Python module
+      pip:
+        name: docker
+
     - name: Pull Backend Image
       docker_image:
         name: "{{ docker_registry }}/scolarite-backend:{{ backend_version }}"
-        source: pull
-        force_source: yes
-
-    - name: Pull Frontend Image
-      docker_image:
-        name: "{{ docker_registry }}/scolarite-frontend:{{ frontend_version }}"
         source: pull
         force_source: yes
 
@@ -26,11 +33,19 @@
         state: absent
       ignore_errors: yes
 
-    - name: Stop and Remove Existing Frontend Container
+    - name: Start MySQL Container
       docker_container:
-        name: scolarite-frontend
-        state: absent
-      ignore_errors: yes
+        name: mysql
+        image: mysql:8.0
+        state: started
+        ports:
+          - "3306:3306"
+        env:
+          MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
+          MYSQL_DATABASE: "{{ mysql_database }}"
+          MYSQL_USER: "{{ mysql_user }}"
+          MYSQL_PASSWORD: "{{ mysql_password }}"
+        restart_policy: always
 
     - name: Start Backend Container
       docker_container:
@@ -41,7 +56,50 @@
           - "8080:8080"
         env:
           SPRING_PROFILES_ACTIVE: "prod"
+          SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/{{ mysql_database }}"
+          SPRING_DATASOURCE_USERNAME: "{{ mysql_user }}"
+          SPRING_DATASOURCE_PASSWORD: "{{ mysql_password }}"
         restart_policy: always
+        depends_on:
+          - mysql
+
+    - name: Run Backend Tests
+      shell: |
+        curl -s http://localhost:8080/actuator/health | grep -q '"status":"UP"'
+      register: test_result
+      failed_when: test_result.rc != 0
+      changed_when: false
+
+---
+- name: Deploy Frontend
+  hosts: frontend
+  become: yes
+  vars:
+    frontend_version: "{{ frontend_version }}"
+    docker_registry: "localhost:5000"
+
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Install Docker Python module
+      pip:
+        name: docker
+
+    - name: Pull Frontend Image
+      docker_image:
+        name: "{{ docker_registry }}/scolarite-frontend:{{ frontend_version }}"
+        source: pull
+        force_source: yes
+
+    - name: Stop and Remove Existing Frontend Container
+      docker_container:
+        name: scolarite-frontend
+        state: absent
+      ignore_errors: yes
 
     - name: Start Frontend Container
       docker_container:
@@ -50,4 +108,11 @@
         state: started
         ports:
           - "80:80"
-        restart_policy: always 
+        restart_policy: always
+
+    - name: Run Frontend Tests
+      shell: |
+        curl -s http://localhost:80 | grep -q "Welcome to Scolarite"
+      register: test_result
+      failed_when: test_result.rc != 0
+      changed_when: false 
