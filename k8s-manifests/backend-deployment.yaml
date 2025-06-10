@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scolarite-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scolarite-backend
+  template:
+    metadata:
+      labels:
+        app: scolarite-backend
+    spec:
+      containers:
+      - name: scolarite-backend
+        image: <REGISTRY>/scolarite-backend:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scolarite-backend
+spec:
+  selector:
+    app: scolarite-backend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP 

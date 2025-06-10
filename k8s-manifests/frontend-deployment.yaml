@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scholarite-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scholarite-frontend
+  template:
+    metadata:
+      labels:
+        app: scholarite-frontend
+    spec:
+      containers:
+      - name: scholarite-frontend
+        image: <REGISTRY>/scholarite-frontend:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scholarite-frontend
+spec:
+  selector:
+    app: scholarite-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP 
