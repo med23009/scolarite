@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: scholarite-frontend
-        image: <REGISTRY>/scholarite-frontend:latest
+        image: localhost:5000/scholarite-frontend:12
         ports:
         - containerPort: 80
 ---
