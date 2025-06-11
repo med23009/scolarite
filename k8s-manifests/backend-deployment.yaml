@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: scolarite-backend
-        image: <REGISTRY>/scolarite-backend:latest
+        image: localhost:5000/scolarite-backend:12
         ports:
         - containerPort: 8080
 ---
