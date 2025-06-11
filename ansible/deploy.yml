@@ -5,27 +5,60 @@
   vars:
     backend_version: "{{ backend_version }}"
     docker_registry: "localhost:5000"
-    mysql_root_password: "your_mysql_root_password"
+    mysql_root_password: "{{ lookup('env', 'MYSQL_ROOT_PASSWORD') | default('your_mysql_root_password', true) }}"
     mysql_database: "scolarite"
     mysql_user: "scolarite_user"
-    mysql_password: "your_mysql_password"
+    mysql_password: "{{ lookup('env', 'MYSQL_PASSWORD') | default('your_mysql_password', true) }}"
+    backend_port: 8080
+    mysql_port: 3306
+    health_check_retries: 5
+    health_check_delay: 10
+
+  handlers:
+    - name: restart backend
+      docker_container:
+        name: scolarite-backend
+        state: started
+        restart_policy: always
+      listen: restart backend
+
+    - name: restart mysql
+      docker_container:
+        name: mysql
+        state: started
+        restart_policy: always
+      listen: restart mysql
 
   tasks:
-    - name: Install Docker
+    - name: Install required packages
       apt:
-        name: docker.io
+        name: 
+          - docker.io
+          - python3-pip
+          - curl
         state: present
         update_cache: yes
 
     - name: Install Docker Python module
       pip:
         name: docker
+        state: present
+
+    - name: Create Docker network
+      docker_network:
+        name: scolarite_network
+        state: present
+      ignore_errors: yes
 
     - name: Pull Backend Image
       docker_image:
         name: "{{ docker_registry }}/scolarite-backend:{{ backend_version }}"
         source: pull
         force_source: yes
+      register: pull_result
+      retries: 3
+      delay: 5
+      until: pull_result is success
 
     - name: Stop and Remove Existing Backend Container
       docker_container:
@@ -38,36 +71,58 @@
         name: mysql
         image: mysql:8.0
         state: started
+        network_mode: bridge
+        networks:
+          - name: scolarite_network
         ports:
-          - "3306:3306"
+          - "{{ mysql_port }}:3306"
         env:
           MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
           MYSQL_DATABASE: "{{ mysql_database }}"
           MYSQL_USER: "{{ mysql_user }}"
           MYSQL_PASSWORD: "{{ mysql_password }}"
         restart_policy: always
+        volumes:
+          - mysql_data:/var/lib/mysql
+      register: mysql_container
+
+    - name: Wait for MySQL to be ready
+      wait_for:
+        host: localhost
+        port: "{{ mysql_port }}"
+        timeout: 300
+        delay: 10
+      when: mysql_container.changed
 
     - name: Start Backend Container
       docker_container:
         name: scolarite-backend
         image: "{{ docker_registry }}/scolarite-backend:{{ backend_version }}"
         state: started
+        network_mode: bridge
+        networks:
+          - name: scolarite_network
         ports:
-          - "8080:8080"
+          - "{{ backend_port }}:8080"
         env:
           SPRING_PROFILES_ACTIVE: "prod"
-          SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/{{ mysql_database }}"
+          SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/{{ mysql_database }}?useSSL=false&allowPublicKeyRetrieval=true"
           SPRING_DATASOURCE_USERNAME: "{{ mysql_user }}"
           SPRING_DATASOURCE_PASSWORD: "{{ mysql_password }}"
         restart_policy: always
-        depends_on:
-          - mysql
+      register: backend_container
+      notify: restart backend
 
-    - name: Run Backend Tests
-      shell: |
-        curl -s http://localhost:8080/actuator/health | grep -q '"status":"UP"'
-      register: test_result
-      failed_when: test_result.rc != 0
+    - name: Check Backend Health
+      uri:
+        url: "http://localhost:{{ backend_port }}/actuator/health"
+        method: GET
+        return_content: yes
+        status_code: 200
+      register: health_check
+      until: health_check.status == 200 and '"status":"UP"' in health_check.content
+      retries: "{{ health_check_retries }}"
+      delay: "{{ health_check_delay }}"
       changed_when: false
 
 ---
@@ -77,23 +132,48 @@
   vars:
     frontend_version: "{{ frontend_version }}"
     docker_registry: "localhost:5000"
+    frontend_port: 80
+    health_check_retries: 5
+    health_check_delay: 10
+
+  handlers:
+    - name: restart frontend
+      docker_container:
+        name: scolarite-frontend
+        state: started
+        restart_policy: always
+      listen: restart frontend
 
   tasks:
-    - name: Install Docker
+    - name: Install required packages
       apt:
-        name: docker.io
+        name: 
+          - docker.io
+          - python3-pip
+          - curl
         state: present
         update_cache: yes
 
     - name: Install Docker Python module
       pip:
         name: docker
+        state: present
+
+    - name: Create Docker network
+      docker_network:
+        name: scolarite_network
+        state: present
+      ignore_errors: yes
 
     - name: Pull Frontend Image
       docker_image:
         name: "{{ docker_registry }}/scolarite-frontend:{{ frontend_version }}"
         source: pull
         force_source: yes
+      register: pull_result
+      retries: 3
+      delay: 5
+      until: pull_result is success
 
     - name: Stop and Remove Existing Frontend Container
       docker_container:
@@ -106,13 +186,23 @@
         name: scolarite-frontend
         image: "{{ docker_registry }}/scolarite-frontend:{{ frontend_version }}"
         state: started
+        network_mode: bridge
+        networks:
+          - name: scolarite_network
         ports:
-          - "80:80"
+          - "{{ frontend_port }}:80"
         restart_policy: always
+      register: frontend_container
+      notify: restart frontend
 
-    - name: Run Frontend Tests
-      shell: |
-        curl -s http://localhost:80 | grep -q "Welcome to Scolarite"
-      register: test_result
-      failed_when: test_result.rc != 0
+    - name: Check Frontend Health
+      uri:
+        url: "http://localhost:{{ frontend_port }}"
+        method: GET
+        return_content: yes
+        status_code: 200
+      register: health_check
+      until: health_check.status == 200 and 'Welcome to Scolarite' in health_check.content
+      retries: "{{ health_check_retries }}"
+      delay: "{{ health_check_delay }}"
       changed_when: false 
