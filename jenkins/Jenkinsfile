@@ -77,15 +77,19 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: "${GIT_CREDENTIALS_ID}", 
                                                     usernameVariable: 'GIT_USERNAME', 
                                                     passwordVariable: 'GIT_PASSWORD')]) {
-                        sh """
-                            git config user.email 'jenkins@example.com'
-                            git config user.name 'Jenkins'
+                        sh '''
+                            git config user.email "jenkins@example.com"
+                            git config user.name "Jenkins"
                             git checkout main
                             git add k8s-manifests/
-                            git commit -m 'Update image tags to ${BUILD_NUMBER}'
-                            git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/med23009/scolarite.git
-                            git push origin ${GIT_BRANCH}
-                        """
+                            if git diff --staged --quiet; then
+                                echo "No changes to commit"
+                            else
+                                git commit -m "Update image tags to ${BUILD_NUMBER}"
+                                git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/med23009/scolarite.git
+                                git push origin ${GIT_BRANCH}
+                            fi
+                        '''
                     }
                 }
             }
@@ -93,8 +97,25 @@ pipeline {
         
         stage('Deploy with Ansible') {
             steps {
-                dir('ansible') {
-                    sh 'ansible-playbook -i inventory.yml deploy.yml -e "backend_version=${BUILD_NUMBER} frontend_version=${BUILD_NUMBER}"'
+                script {
+                    try {
+                        dir('ansible') {
+                            sh '''
+                                echo "Vérification de l'installation d'Ansible..."
+                                ansible --version
+                                
+                                echo "Vérification de l'inventaire..."
+                                ansible-inventory --list
+                                
+                                echo "Démarrage du déploiement avec Ansible..."
+                                ansible-playbook -i inventory.yml deploy.yml -e "backend_version=${BUILD_NUMBER} frontend_version=${BUILD_NUMBER}" -vvv
+                            '''
+                        }
+                    } catch (Exception e) {
+                        echo "Erreur lors du déploiement Ansible: ${e.message}"
+                        currentBuild.result = 'FAILURE'
+                        throw e
+                    }
                 }
             }
         }
