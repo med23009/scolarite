@@ -107,12 +107,12 @@ pipeline {
                                 echo "Vérification de l'inventaire..."
                                 ansible-inventory --list
                                 
-                                echo "Démarrage du déploiement avec Ansible..."
-                                ansible-playbook -i inventory.yml deploy.yml -e "backend_version=${BUILD_NUMBER} frontend_version=${BUILD_NUMBER}" -vvv
+                                echo "Démarrage des tests avec Ansible..."
+                                ansible-playbook -i inventory.yml test.yml -vvv
                             '''
                         }
                     } catch (Exception e) {
-                        echo "Erreur lors du déploiement Ansible: ${e.message}"
+                        echo "Erreur lors des tests Ansible: ${e.message}"
                         currentBuild.result = 'FAILURE'
                         throw e
                     }

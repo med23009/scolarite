@@ -1,0 +1,52 @@
+---
+- name: Test Backend
+  hosts: backend
+  become: yes
+  vars:
+    backend_port: 8080
+    health_check_retries: 5
+    health_check_delay: 10
+
+  tasks:
+    - name: Check Backend Health
+      uri:
+        url: "http://localhost:{{ backend_port }}/actuator/health"
+        method: GET
+        return_content: yes
+        status_code: 200
+      register: health_check
+      until: health_check.status == 200 and '"status":"UP"' in health_check.content
+      retries: "{{ health_check_retries }}"
+      delay: "{{ health_check_delay }}"
+      changed_when: false
+
+    - name: Test Backend API Endpoints
+      uri:
+        url: "http://localhost:{{ backend_port }}/api/students"
+        method: GET
+        return_content: yes
+        status_code: [200, 401]
+      register: api_check
+      changed_when: false
+
+---
+- name: Test Frontend
+  hosts: frontend
+  become: yes
+  vars:
+    frontend_port: 80
+    health_check_retries: 5
+    health_check_delay: 10
+
+  tasks:
+    - name: Check Frontend Health
+      uri:
+        url: "http://localhost:{{ frontend_port }}"
+        method: GET
+        return_content: yes
+        status_code: 200
+      register: health_check
+      until: health_check.status == 200 and 'Welcome to Scolarite' in health_check.content
+      retries: "{{ health_check_retries }}"
+      delay: "{{ health_check_delay }}"
+      changed_when: false 
