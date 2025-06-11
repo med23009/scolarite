@@ -28,7 +28,6 @@
         status_code: [200, 401]
       register: api_check
       changed_when: false
-
 ---
 - name: Test Frontend
   hosts: frontend
