@@ -1,9 +1,10 @@
----
-- name: Test Backend
-  hosts: backend
-  become: yes
+- name: Test Backend and Frontend
+  hosts: localhost
+  connection: local
+  become: no
   vars:
-    backend_port: 8080
+    backend_port: 8000
+    frontend_port: 80
     health_check_retries: 5
     health_check_delay: 10
 
@@ -14,8 +15,8 @@
         method: GET
         return_content: yes
         status_code: 200
-      register: health_check
-      until: health_check.status == 200 and '"status":"UP"' in health_check.content
+      register: backend_health
+      until: backend_health.status == 200 and '"status":"UP"' in backend_health.content
       retries: "{{ health_check_retries }}"
       delay: "{{ health_check_delay }}"
       changed_when: false
@@ -28,24 +29,15 @@
         status_code: [200, 401]
       register: api_check
       changed_when: false
----
-- name: Test Frontend
-  hosts: frontend
-  become: yes
-  vars:
-    frontend_port: 80
-    health_check_retries: 5
-    health_check_delay: 10
 
-  tasks:
     - name: Check Frontend Health
       uri:
         url: "http://localhost:{{ frontend_port }}"
         method: GET
         return_content: yes
         status_code: 200
-      register: health_check
-      until: health_check.status == 200 and 'Welcome to Scolarite' in health_check.content
+      register: frontend_health
+      until: frontend_health.status == 200 and 'Welcome to Scolarite' in frontend_health.content
       retries: "{{ health_check_retries }}"
       delay: "{{ health_check_delay }}"
-      changed_when: false 
+      changed_when: false
