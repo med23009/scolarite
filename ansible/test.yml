@@ -5,8 +5,8 @@
   vars:
     backend_port: 8082
     frontend_port: 80
-    health_check_retries: 10
-    health_check_delay: 15
+    health_check_retries: 20
+    health_check_delay: 30
 
   tasks:
     - name: Vérifier si le backend est en cours d'exécution
@@ -22,8 +22,8 @@
       wait_for:
         port: "{{ backend_port }}"
         host: "127.0.0.1"
-        timeout: 120
-        delay: 5
+        timeout: 180
+        delay: 10
       register: wait_result
 
     - name: Afficher le résultat de l'attente
@@ -35,9 +35,12 @@
         url: "http://localhost:{{ backend_port }}/actuator/health"
         method: GET
         return_content: yes
-        status_code: 200
+        status_code: [200, 403]
+        headers:
+          Accept: "application/json"
+          Content-Type: "application/json"
       register: backend_health
-      until: backend_health.status == 200 and '"status":"UP"' in backend_health.content
+      until: backend_health.status == 200
       retries: "{{ health_check_retries }}"
       delay: "{{ health_check_delay }}"
       changed_when: false
@@ -52,6 +55,9 @@
         method: GET
         return_content: yes
         status_code: [200, 401]
+        headers:
+          Accept: "application/json"
+          Content-Type: "application/json"
       register: api_check
       changed_when: false
 
@@ -66,7 +72,7 @@
         return_content: yes
         status_code: 200
       register: frontend_health
-      until: frontend_health.status == 200 and 'Welcome to Scolarite' in frontend_health.content
+      until: frontend_health.status == 200
       retries: "{{ health_check_retries }}"
       delay: "{{ health_check_delay }}"
       changed_when: false

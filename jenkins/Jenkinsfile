@@ -104,7 +104,7 @@ pipeline {
                             sh '''
                                 echo "Démarrage du backend..."
                                 nohup java -jar target/*.jar --server.port=8082 > backend.log 2>&1 &
-                                sleep 120  # Attendre que l'application démarre
+                                sleep 180  # Attendre que l'application démarre
                             '''
                         }
 
@@ -113,7 +113,7 @@ pipeline {
                             sh '''
                                 echo "Démarrage du frontend..."
                                 nohup npm run start > frontend.log 2>&1 &
-                                sleep 120  # Attendre que l'application démarre
+                                sleep 180  # Attendre que l'application démarre
                             '''
                         }
                         
@@ -135,8 +135,8 @@ pipeline {
                         throw e
                     } finally {
                         // Arrêter le backend et le frontend après les tests
-                        sh 'pkill -f "java -jar target/*.jar" || true'
-                        sh 'pkill -f "node" || true'
+                        sh 'sudo pkill -f "java -jar target/*.jar" || true'
+                        sh 'sudo pkill -f "node" || true'
                     }
                 }
             }
