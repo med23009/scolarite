@@ -99,6 +99,24 @@ pipeline {
             steps {
                 script {
                     try {
+                        // Démarrer le backend
+                        dir('scolarite-backend') {
+                            sh '''
+                                echo "Démarrage du backend..."
+                                nohup java -jar target/*.jar --server.port=8082 > backend.log 2>&1 &
+                                sleep 120  # Attendre que l'application démarre
+                            '''
+                        }
+
+                        // Démarrer le frontend
+                        dir('Scholarite_frontend') {
+                            sh '''
+                                echo "Démarrage du frontend..."
+                                nohup npm run start > frontend.log 2>&1 &
+                                sleep 120  # Attendre que l'application démarre
+                            '''
+                        }
+                        
                         dir('ansible') {
                             sh '''
                                 echo "Vérification de l'installation d'Ansible..."
@@ -115,6 +133,10 @@ pipeline {
                         echo "Erreur lors des tests Ansible: ${e.message}"
                         currentBuild.result = 'FAILURE'
                         throw e
+                    } finally {
+                        // Arrêter le backend et le frontend après les tests
+                        sh 'pkill -f "java -jar target/*.jar" || true'
+                        sh 'pkill -f "node" || true'
                     }
                 }
             }
