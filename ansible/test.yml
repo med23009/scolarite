@@ -3,19 +3,34 @@
   connection: local
   become: no
   vars:
-    backend_port: 8082   # port mis à jour pour éviter conflit
+    backend_port: 8082
     frontend_port: 80
-    health_check_retries: 5
-    health_check_delay: 10
+    health_check_retries: 10
+    health_check_delay: 15
 
   tasks:
-    - name: Wait for backend port to be open
+    - name: Vérifier si le backend est en cours d'exécution
+      shell: netstat -tuln | grep :{{ backend_port }} || true
+      register: port_check
+      changed_when: false
+
+    - name: Afficher l'état du port
+      debug:
+        msg: "État du port {{ backend_port }}: {{ port_check.stdout_lines }}"
+
+    - name: Attendre que le port du backend soit ouvert
       wait_for:
         port: "{{ backend_port }}"
         host: "127.0.0.1"
-        timeout: 60
+        timeout: 120
+        delay: 5
+      register: wait_result
 
-    - name: Check Backend Health
+    - name: Afficher le résultat de l'attente
+      debug:
+        msg: "Résultat de l'attente: {{ wait_result }}"
+
+    - name: Vérifier la santé du backend
       uri:
         url: "http://localhost:{{ backend_port }}/actuator/health"
         method: GET
@@ -27,7 +42,11 @@
       delay: "{{ health_check_delay }}"
       changed_when: false
 
-    - name: Test Backend API Endpoints
+    - name: Afficher le résultat de la vérification de santé
+      debug:
+        msg: "État de santé du backend: {{ backend_health }}"
+
+    - name: Tester les endpoints de l'API
       uri:
         url: "http://localhost:{{ backend_port }}/api/students"
         method: GET
@@ -36,7 +55,11 @@
       register: api_check
       changed_when: false
 
-    - name: Check Frontend Health
+    - name: Afficher le résultat du test API
+      debug:
+        msg: "Résultat du test API: {{ api_check }}"
+
+    - name: Vérifier la santé du frontend
       uri:
         url: "http://localhost:{{ frontend_port }}"
         method: GET
@@ -47,3 +70,7 @@
       retries: "{{ health_check_retries }}"
       delay: "{{ health_check_delay }}"
       changed_when: false
+
+    - name: Afficher le résultat de la vérification frontend
+      debug:
+        msg: "État de santé du frontend: {{ frontend_health }}"
