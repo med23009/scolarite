@@ -3,12 +3,18 @@
   connection: local
   become: no
   vars:
-    backend_port: 8000
+    backend_port: 8082   # port mis à jour pour éviter conflit
     frontend_port: 80
     health_check_retries: 5
     health_check_delay: 10
 
   tasks:
+    - name: Wait for backend port to be open
+      wait_for:
+        port: "{{ backend_port }}"
+        host: "127.0.0.1"
+        timeout: 60
+
     - name: Check Backend Health
       uri:
         url: "http://localhost:{{ backend_port }}/actuator/health"
